@@ -86,4 +86,4 @@ cet_build_plugin(TestGENIEHelper art::module
 
 install_headers()
 install_fhicl()
-install_source( LIST README )
+install_source()
