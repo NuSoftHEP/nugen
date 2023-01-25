@@ -314,6 +314,10 @@ c7:debug	c7:debug	c7:debug	c7:debug	c7:debug   -nq-
 c7:prof		c7:prof		c7:prof		c7:prof		c7:prof    -nq-
 e20:debug	e20:debug	e20:debug	e20:debug	e20:debug  -nq-
 e20:prof	e20:prof	e20:prof	e20:prof	e20:prof   -nq-
+e20:geant4:debug e20:debug	e20:debug	e20:geant4:debug e20:debug  -nq-
+e20:geant4:prof	e20:prof	e20:prof	e20:geant4:prof	e20:prof   -nq-
+e20:inclxx:debug e20:debug	e20:debug	e20:inclxx:debug e20:debug  -nq-
+e20:inclxx:prof	e20:prof	e20:prof	e20:inclxx:prof	e20:prof   -nq-
 end_qualifier_list
 ####################################
 
