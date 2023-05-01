@@ -181,6 +181,7 @@ namespace evgb {
     double                   fRandomTimeOffset;  ///< additional random time shift (ns) added to every particle time
     std::string              fSpillTimeConfig;   ///< alternative to flat spill distribution
     bool                     fAddGenieVtxTime;   ///< incorporate time from flux window to interaction point and (possibily) proton-on-target to flux window
+    bool                     fForceApplyFlxWgt;  ///< apply GFluxI::Weight() before returning event
 
     std::vector<int>         fGenFlavors;        ///< pdg codes for flavors to generate
     double                   fAtmoEmin;          ///< atmo: Minimum energy of neutrinos in GeV
@@ -188,6 +189,8 @@ namespace evgb {
     double                   fAtmoRl;            ///< atmo: radius of the sphere on where the neutrinos are generated
     double                   fAtmoRt;            ///< atmo: radius of the transvere (perpendicular) area on the sphere
                                                  ///< where the neutrinos are generated
+    double                   fAtmoSpectralIndex; ///< atmo: Spectral index for power spectrum generation
+    
     std::vector<std::string> fEnvironment;       ///< environmental variables and settings used by genie
     std::string              fXSecTable;         ///< cross section file (was $GSPLOAD)
     std::string              fTuneName;          ///< GENIE R-3 Tune name (defines model configuration)

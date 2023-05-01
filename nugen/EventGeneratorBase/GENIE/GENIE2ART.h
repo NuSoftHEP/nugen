@@ -11,6 +11,7 @@
 #define EVGB_GENIE2ART_H
 
 #include <string>
+#include <unordered_map>
 
 /// GENIE neutrino interaction simulation objects
 namespace genie {
@@ -58,13 +59,15 @@ namespace evgb {
                    simb::MCTruth& mctruth,
                    const std::string & genieVersion="unknown",
                    const std::string & genieTune="unknown",
-                   bool addGenieVtxTime = false);
+                   bool addGenieVtxTime = false,
+                   const std::unordered_map<std::string, std::string> genConfig = {});
   void FillMCTruth(const genie::EventRecord* grec,
                    TLorentzVector& vtxOffset,
                    simb::MCTruth& mctruth,
                    const std::string & genieVersion="unknown",
                    const std::string & genieTune="unknown",
-                   bool addGenieVtxTime = false);
+                   bool addGenieVtxTime = false,
+                   const std::unordered_map<std::string, std::string> genConfig = {});
   void FillGTruth(const genie::EventRecord* grec,
                   simb::GTruth& gtruth);
 

@@ -184,10 +184,11 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
                        simb::MCTruth &truth,
                        const std::string & genieVersion,
                        const std::string & genieTune,
-                       bool addGenieVtxTime)
+                       bool addGenieVtxTime,
+                       const std::unordered_map<std::string, std::string> genConfig)
 {
   TLorentzVector vtxOffset(0,0,0,spillTime);
-  FillMCTruth(record,vtxOffset,truth,genieVersion,genieTune,addGenieVtxTime);
+  FillMCTruth(record,vtxOffset,truth,genieVersion,genieTune,addGenieVtxTime, genConfig);
 }
 
 void evgb::FillMCTruth(const genie::EventRecord *record,
@@ -195,7 +196,8 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
                        simb::MCTruth  &truth,
                        const std::string & genieVersion,
                        const std::string & genieTune,
-                       bool addGenieVtxTime)
+                       bool addGenieVtxTime,
+                       const std::unordered_map<std::string, std::string> genConfig)
 {
   // offset vector is assmed to be in (cm,ns) which is MCTruth's units
 
@@ -313,7 +315,9 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
 
   // set the neutrino information in MCTruth
   truth.SetOrigin(simb::kBeamNeutrino);
-  truth.SetGeneratorInfo(simb::Generator_t::kGENIE, genieVersion, {{"tune", genieTune}});
+  std::unordered_map<std::string, std::string> genConfigCopy(genConfig);
+  genConfigCopy.emplace("tune", genieTune);
+  truth.SetGeneratorInfo(simb::Generator_t::kGENIE, genieVersion, genConfigCopy);
 
   // The genie event kinematics are subtle different from the event
   // kinematics that a experimentalist would calculate
