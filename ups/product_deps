@@ -174,8 +174,6 @@ defaultqual	e26
 #
 ####################################
 bindir	product_dir	bin
-incdir	product_dir	include
-libdir	fq_dir		lib
 ####################################
 
 ####################################
