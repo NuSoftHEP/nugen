@@ -14,25 +14,13 @@
                "type" : "BOOL",
                "value" : "ON"
             },
-            "nugen_ADD_ARCH_DIRS_INIT" : {
-               "type" : "INTERNAL",
-               "value" : "LIBRARY_DIR"
-            },
             "nugen_ADD_NOARCH_DIRS_INIT" : {
                "type" : "INTERNAL",
-               "value" : "INCLUDE_DIR;BIN_DIR"
+               "value" : "BIN_DIR"
             },
             "nugen_BIN_DIR_INIT" : {
                "type" : "STRING",
                "value" : "bin"
-            },
-            "nugen_INCLUDE_DIR_INIT" : {
-               "type" : "STRING",
-               "value" : "include"
-            },
-            "nugen_LIBRARY_DIR_INIT" : {
-               "type" : "STRING",
-               "value" : "lib"
             }
          },
          "description" : "Configuration settings translated from ups/product_deps",
