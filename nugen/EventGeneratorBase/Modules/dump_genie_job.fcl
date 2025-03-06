@@ -62,8 +62,8 @@ outputs:
   }
 }
 
-physics.analyzers.outputgenie.dumpFilePattern:  "std::cout"
+physics.analyzers.outputgenie.dumpFilePattern:  "out.txt" ## "std::cout"
 
-#physics.analyzers.outputgenie.dumpMCTruth:  true
-#physics.analyzers.outputgenie.dumpGTruth:   true
+physics.analyzers.outputgenie.dumpMCTruth:  true
+physics.analyzers.outputgenie.dumpGTruth:   true
 #physics.analyzers.outputgenie.dumpMCFlux:   true
