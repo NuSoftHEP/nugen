@@ -71,7 +71,7 @@ physics:
 
  producers:
  {
-   generator: @local::geniehelpertest_dune_dk2nu
+   generator: @local::geniehelpertest_nova_dk2nu
 ### alternative tests
 ### change filenames below (at bottom of file)
 #   generator: @local::geniehelpertest_nova_dk2nu
