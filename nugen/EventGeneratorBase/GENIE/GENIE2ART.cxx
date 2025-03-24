@@ -317,6 +317,10 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
   truth.SetOrigin(simb::kBeamNeutrino);
   std::unordered_map<std::string, std::string> genConfigCopy(genConfig);
   genConfigCopy.emplace("tune", genieTune);
+  std::string genie_phyopt_variant = evgb::ExpandEnvVar("$GENIE_PHYOPT_VARIANT");
+  if (genie_phyopt_variant != "" )
+    genConfigCopy.emplace("genie_phyopt_variant",genie_phyopt_variant);
+
   truth.SetGeneratorInfo(simb::Generator_t::kGENIE, genieVersion, genConfigCopy);
 
   // The genie event kinematics are subtle different from the event

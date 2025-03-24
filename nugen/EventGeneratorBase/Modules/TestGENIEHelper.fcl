@@ -101,9 +101,10 @@ standard_geniehelpertest:
 
 geniehelpertest_nova_nd:  @local::standard_geniehelpertest
 geniehelpertest_nova_nd.EventsPerSpill:  2
-geniehelpertest_nova_nd.GeomFileName: "/nova/app/home/novasoft/slf6/novasoft/releases/development/Geometry/gdml/neardet-3x3-8block-xtru-vacuum-stagger.gdml"
-geniehelpertest_nova_nd.GeomScan: "file: /nova/app/home/novasoft/slf6/novasoft/releases/development/Geometry/maxpathlengths/NOvA_NEAR-ROCK.maxpl.xml"
-geniehelpertest_nova_nd.FluxSearchPaths:   "/nova/ana/users/rhatcher/flux/sample"
+geniehelpertest_nova_nd.GeomFileName: "/cvmfs/nova-development.opensciencegrid.org/novasoft//releases/development/Geometry/gdml/neardet-3x3-8block-xtru-vacuum-stagger.gdml"
+geniehelpertest_nova_nd.GeomScan: "file: /exp/nova/app/home/novasoft/slf6/novasoft/releases/development/Geometry/maxpathlengths/NOvA_NEAR-ROCK.maxpl.xml"
+
+geniehelpertest_nova_nd.FluxSearchPaths:   "/exp/nova/data/users/rhatcher/flux"
 
 geniehelpertest_nova_gsimple:  @local::geniehelpertest_nova_nd
 geniehelpertest_nova_gsimple.FluxType:  gsimple
@@ -122,8 +123,8 @@ geniehelpertest_nova_dk2nu:  @local::geniehelpertest_nova_nd
 geniehelpertest_nova_dk2nu.FluxType:  dk2nu
 geniehelpertest_nova_dk2nu.FluxCopyMethod: "DIRECT" # IFDH or "DIRECT" method.
 geniehelpertest_nova_dk2nu.MaxFluxFileNumber:  2
-#geniehelpertest_nova_dk2nu.FluxFiles:        [ "dk2nu_flugg/*.dk2nu.root" ]
-geniehelpertest_nova_dk2nu.FluxFiles:        [ "dk2nu_minerva/*dk2nu*.root" ]
+#geniehelpertest_nova_dk2nu.FluxFiles:        [ "dk2nu/*.dk2nu.root" ]
+geniehelpertest_nova_dk2nu.FluxFiles:        [ "dk2nu/*dk2nu*.root" ]
 
 #=========================================================================
 
