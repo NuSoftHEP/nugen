@@ -767,19 +767,6 @@ namespace rwgt {
   void GENIEReweight::ConfigureQEMA() {
     LOG_INFO("GENIEReweight") << "Adding CCQE axial FF weight calculator ";
     fWcalc->AdoptWghtCalc( "xsec_ccqe",       new GReWeightNuXSecCCQE      );
-    GReWeightNuXSecCCQE *rwccqe = dynamic_cast <GReWeightNuXSecCCQE*> (fWcalc->WghtCalc("xsec_ccqe"));
-    if (fReweightZexp)
-    {
-      LOG_INFO("GENIEReweight") << "in z-expansion mode";
-      rwccqe->SetMode(GReWeightNuXSecCCQE::kModeZExp);
-    }
-    else if(!fMaQEshape) {
-      LOG_INFO("GENIEReweight") << "in axial mass (QE) rate+shape mode";
-      rwccqe->SetMode(GReWeightNuXSecCCQE::kModeMa);
-    }
-    else {
-      LOG_INFO("GENIEReweight") << "in axial mass (QE) shape only mode";
-    }
   }
 
   ///<Configure the QE vector FF weight calculator
