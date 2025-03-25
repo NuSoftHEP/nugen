@@ -244,6 +244,67 @@ namespace rwgt {
     //Continous "switch" at 0.0 full isotropic pion angular distribution.  At 1.0 full R/S pion angular distribtuion.
     //This parameter does not have an "uncertainty" value associated with it.
     //The tweaked dial value gets passed all the way through unchanged to the weight calculator
+
+    //
+    //   Alternative approach to CCQE form factors (RunningMA)
+    //
+    fNominalParameters[(int)rwgt::fReweightE0CCQEshape] = 0.334;
+    fNominalParameters[(int)rwgt::fReweightE0CCQE] = 0.334;
+
+    //
+    // Empirical MEC dials
+    //
+    fNominalParameters[(int)rwgt::fReweightEmpMEC_Mq2d] = 0.4;
+    fNominalParameters[(int)rwgt::fReweightEmpMEC_Mass] = 2.15;
+    fNominalParameters[(int)rwgt::fReweightEmpMEC_Width] = 0.05;
+    fNominalParameters[(int)rwgt::fReweightEmpMEC_FracPN_NC] = 0.8;
+    fNominalParameters[(int)rwgt::fReweightEmpMEC_FracPN_CC] = 0.8;
+    fNominalParameters[(int)rwgt::fReweightEmpMEC_FracCCQE] = 0.3;
+    fNominalParameters[(int)rwgt::fReweightEmpMEC_FracNCQE] = 0.3;
+    fNominalParameters[(int)rwgt::fReweightEmpMEC_FracPN_EM] = 0.8;
+    fNominalParameters[(int)rwgt::fReweightEmpMEC_FracEMQE] = 0.05;
+
+    //
+	// General MEC dials
+	//
+    fNominalParameters[(int)rwgt::fReweightNormCCMEC] = 1.0;
+    fNominalParameters[(int)rwgt::fReweightNormNCMEC] = 1.0;
+    fNominalParameters[(int)rwgt::fReweightNormEMMEC] = 1.0;
+    fNominalParameters[(int)rwgt::fReweightDecayAngMEC] = 0;      // Continous transition b/w "isotropic" (0) and "3/2 cos^2(theta)" (1)
+    fNominalParameters[(int)rwgt::fReweightFracPN_CCMEC] = std::numeric_limits<double>::signaling_nan();  // there is no single value here, it's kinematics-dependent
+    fNominalParameters[(int)rwgt::fReweightFracDelta_CCMEC] = std::numeric_limits<double>::signaling_nan();  // there is no single value here, it's kinematics-dependent
+  	fNominalParameters[(int)rwgt::fReweightXSecShape_CCMEC] = 0;      // Continous transition b/w "default model" (0) and "alternate model" (1).  Only works for Valencia-to-Empirical MEC anyway
+
+  	fNominalParameters[(int)rwgt::fReweightRPA_CCQE] = 0;      // Continous transition b/w "RPA on" (0) and "RPA off" (1).  Only works for Valencia CCQE.
+
+    fNominalParameters[(int)rwgt::fReweightTheta_Delta2NRad] = 0; // Continous transition b/w "iostropic" (0) and "cos^2(theta)" (1).
+
+  	fNominalParameters[(int)rwgt::fReweightCoulombCCQE] = 1.0;  // this is a scale factor, so default is 1
+
+    fNominalParameters[(int)rwgt::fReweightNormCCCOHpi] = 1.0;
+    fNominalParameters[(int)rwgt::fReweightNormNCCOHpi] = 1.0;
+
+    //
+    // Alternative approach to CCQE form factors (z-expansion) vector form factor
+    //
+    fNominalParameters[(int)rwgt::fReweightZExpELFF] = 1.0;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_AP1] = -1.485958065859;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_AP2] = -0.096104515639;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_AP3] = 1.823367310007;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_AP4] = 1.287051328146;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_AN1] = -4.087902402976;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_AN2] = 0.175515803136;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_AN3] = 4.861856163076;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_AN4] = -0.982798179847;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_BP1] = 0.084252682465;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_BP2] = -0.278572218873;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_BP3] = -0.153916309312;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_BP4] = 0.353999966588;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_BN1] = 2.706784556423;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_BN2] = -0.424305225602;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_BN3] = -2.66245306664;
+    fNominalParameters[(int)rwgt::fReweightZExpELFF_BN4] = 0.06758307604;
+
   }
 
   ///<Return the nominal value for the given parameter.
