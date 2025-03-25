@@ -128,27 +128,6 @@ using genie::Messenger;
 namespace rwgt {
   ///<constructor
   GENIEReweight::GENIEReweight() :
-        fReweightNCEL(false),
-        fReweightQEMA(false),
-        fReweightQEVec(false),
-        fReweightCCRes(false),
-        fReweightNCRes(false),
-        fReweightResBkg(false),
-        fReweightResDecay(false),
-        fReweightNC(false),
-        fReweightDIS(false),
-        fReweightCoh(false),
-        fReweightAGKY(false),
-        fReweightDISNucMod(false),
-        fReweightFGM(false),
-        fReweightFZone(false),
-        fReweightINuke(false),
-        fReweightZexp(false),
-        fReweightMEC(false),
-        fMaQEshape(false),
-        fMaCCResShape(false),
-        fMaNCResShape(false),
-        fDISshape(false),
         fUseSigmaDef(true) {
 
     LOG_INFO("GENIEReweight") << "Create GENIEReweight object";
@@ -349,6 +328,28 @@ namespace rwgt {
   void GENIEReweight::Configure() {
     LOG_INFO("GENIEReweight") << "Configure weight calculator";
 
+    // these used to decide which calculators need to be configured
+    bool configure_NCEL_calc = false,
+         configure_CCQE_calc = false,
+         configure_QEVec_calc = false,
+         configure_ZexpVector_calc = false,
+         configure_CCRes_calc = false,
+         configure_NCRes_calc = false,
+         configure_ResBkg_calc = false,
+         configure_ResDecay_calcs = false,
+         configure_NC_calc = false,
+         configure_DIS_calc = false,
+         configure_Coh_calc = false,
+         configure_AGKY_calc = false,
+         configure_DISNucMod_calc = false,
+         configure_FGM_calc = false,
+         configure_FZone_calc = false,
+         configure_INuke_calc = false,
+         configure_MEC_calc = false;
+
+    bool have_MEC_Empirical = false,
+         have_MEC_Theory = false;
+
     for(unsigned int i = 0; i < fReWgtParameterName.size(); i++) {
 
       switch (fReWgtParameterName[i])
@@ -363,19 +364,25 @@ namespace rwgt {
         case rwgt::fReweightNormCCQE:
         case rwgt::fReweightNormCCQEenu:
         case rwgt::fReweightMaCCQEshape:
+          configure_CCQE_calc = true;
         case rwgt::fReweightMaCCQE:
           fReweightQEMA = true;
           break;
 
         //CC QE Vector parameters
+          configure_CCQE_calc = true;
         case rwgt::fReweightVecCCQEshape:
           fReweightQEVec = true;
           break;
 
         //CC Resonance parameters
+          configure_ZexpVector_calc = true;
+          configure_MEC_calc = true;
+          configure_MEC_calc = true;
         case rwgt::fReweightNormCCRES:
         case rwgt::fReweightMaCCRESshape:
         case rwgt::fReweightMvCCRESshape:
+          configure_CCRes_calc = true;
         case rwgt::fReweightMaCCRES:
         case rwgt::fReweightMvCCRES:
           fReweightCCRes = true;
@@ -385,15 +392,18 @@ namespace rwgt {
         case rwgt::fReweightNormNCRES:
         case rwgt::fReweightMaNCRESshape:
         case rwgt::fReweightMvNCRESshape:
+          configure_NCRes_calc = true;
         case rwgt::fReweightMaNCRES:
         case rwgt::fReweightMvNCRES:
           fReweightNCRes = true;
+          configure_NCRes_calc = true;
           break;
 
         //Coherent parameters
         case rwgt::fReweightMaCOHpi:
         case rwgt::fReweightR0COHpi:
           fReweightCoh = true;
+          configure_Coh_calc = true;
           break;
 
         //Non-resonance background KNO parameters
@@ -426,35 +436,36 @@ namespace rwgt {
         case rwgt::fReweightCV1uBYshape:
         case rwgt::fReweightCV2uBYshape:
         case rwgt::fReweightNormDISCC:
+          configure_DIS_calc = true;
         case rwgt::fReweightRnubarnuCC:
-          fReweightDIS = true;
+          configure_DIS_calc = true;
           break;
 
         //DIS nuclear model parameters
         case rwgt::fReweightDISNuclMod:
-          fReweightDISNucMod = true;
+          configure_DISNucMod_calc = true;
           break;
 
         //NC cross section
         case rwgt::fReweightNC:
-          fReweightNC = true;
+          configure_NC_calc = true;
           break;
 
         //Hadronization parameters
         case rwgt::fReweightAGKY_xF1pi:
         case rwgt::fReweightAGKY_pT1pi:
-          fReweightAGKY = true;
+          configure_AGKY_calc = true;
           break;
 
         //Elastic (and QE) nuclear model parameters
         case rwgt::fReweightCCQEPauliSupViaKF:
         case rwgt::fReweightCCQEMomDistroFGtoSF:
-          fReweightFGM = true;
+          configure_FGM_calc = true;
           break;
 
         //Formation Zone
         case rwgt::fReweightFormZone:
-          fReweightFZone = true;
+          configure_FZone_calc = true;
           break;
 
         //Intranuke Parameters
@@ -474,7 +485,7 @@ namespace rwgt {
         case rwgt::fReweightFrInel_N :
         case rwgt::fReweightFrAbs_N :
         case rwgt::fReweightFrPiProd_N:
-          fReweightINuke = true;
+          configure_INuke_calc = true;
           break;
 
         //Resonance Decay parameters
@@ -492,6 +503,7 @@ namespace rwgt {
         case rwgt::fReweightZExpA4CCQE:
         case rwgt::fReweightAxFFCCQEshape:
           fReweightZexp = true;
+          configure_ResDecay_calcs = true;
           break;
 
       }  // switch(fReWgtParameterName[i])
@@ -499,21 +511,23 @@ namespace rwgt {
     } //end for loop
 
     //configure the individual weight calculators
-    if(fReweightNCEL) this->ConfigureNCEL();
-    if(fReweightQEMA || fReweightZexp) this->ConfigureQEMA();
-    if(fReweightQEVec) this->ConfigureQEVec();
-    if(fReweightCCRes) this->ConfigureCCRes();
-    if(fReweightNCRes) this->ConfigureNCRes();
-    if(fReweightResBkg) this->ConfigureResBkg();
-    if(fReweightResDecay) this->ConfgureResDecay();
-    if(fReweightNC) this->ConfigureNC();
-    if(fReweightDIS) this->ConfigureDIS();
-    if(fReweightCoh) this->ConfigureCoh();
-    if(fReweightAGKY) this->ConfigureAGKY();
-    if(fReweightDISNucMod) this->ConfigureDISNucMod();
-    if(fReweightFGM) this->ConfigureFGM();
-    if(fReweightFZone) this->ConfigureFZone();
-    if(fReweightINuke) this->ConfigureINuke();
+    if(configure_NCEL_calc) this->ConfigureNCEL();
+    if(configure_CCQE_calc) this->ConfigureCCQE();
+    if(configure_QEVec_calc) this->ConfigureQEVec();
+    if(configure_ZexpVector_calc) this->ConfigureZexpVector();
+    if(configure_MEC_calc) this->ConfigureMEC();
+    if(configure_CCRes_calc) this->ConfigureCCRes();
+    if(configure_NCRes_calc) this->ConfigureNCRes();
+    if(configure_ResBkg_calc) this->ConfigureResBkg();
+    if(configure_ResDecay_calcs) this->ConfgureResDecay();
+    if(configure_NC_calc) this->ConfigureNC();
+    if(configure_DIS_calc) this->ConfigureDIS();
+    if(configure_Coh_calc) this->ConfigureCoh();
+    if(configure_AGKY_calc) this->ConfigureAGKY();
+    if(configure_DISNucMod_calc) this->ConfigureDISNucMod();
+    if(configure_FGM_calc) this->ConfigureFGM();
+    if(configure_FZone_calc) this->ConfigureFZone();
+    if(configure_INuke_calc) this->ConfigureINuke();
     this->ConfigureParameters();
 
   }

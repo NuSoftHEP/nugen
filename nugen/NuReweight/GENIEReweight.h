@@ -113,27 +113,6 @@ namespace rwgt{
 #endif
 
   protected:
-
-    //Reweight configuration bools it is possible to use all simultaneously
-    bool fReweightNCEL;
-    bool fReweightQEMA;
-    bool fReweightQEVec;
-    bool fReweightCCRes;
-    bool fReweightNCRes;
-    bool fReweightResBkg;
-    bool fReweightResDecay;
-    bool fReweightNC;
-    bool fReweightDIS;
-    bool fReweightCoh;
-    bool fReweightAGKY;
-    bool fReweightDISNucMod;
-    bool fReweightFGM;
-    bool fReweightFZone;
-    bool fReweightINuke;
-    bool fReweightZexp;
-    bool fReweightMEC;   //Not used. Reserved for future addition to GENIE
-
-    bool fMaQEshape;
     bool fMaCCResShape;
     bool fMaNCResShape;
     bool fDISshape;
