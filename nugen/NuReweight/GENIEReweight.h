@@ -46,8 +46,15 @@ namespace rwgt{
     void ReweightNCEL(double ma, double eta);
 
     void ReweightQEMA(double ma);
+    void ReweightQEMARun(double MA, double E0);
     void ReweightQEVec(double mv);
-    void ReweightQEZExp(double norm, double a1, double a2, double a3, double a4);
+    void ReweightQEZExpAxial(double norm, double a1, double a2, double a3, double a4);
+    void ReweightQEZExpVector(double norm,
+                              const std::array<double, 4>& Z_AP,
+                              const std::array<double, 4>& Z_BP,
+                              const std::array<double, 4>& Z_AN,
+                              const std::array<double, 4>& Z_BN);
+    void ReweightQEZExpVector(double norm, double scaleFactor);
 
     void ReweightResGanged(double ma, double mv=0.0);
     void ReweightCCRes(double ma, double mv=0.0);
@@ -94,8 +101,8 @@ namespace rwgt{
     double CalculateWeight(const genie::EventRecord& evr) const;
 
     //Functions to configure individual weight calculators
+    void ConfigureCCQE();
     void ConfigureNCEL();
-    void ConfigureQEMA();
     void ConfigureQEVec();
     void ConfigureCCRes();
     void ConfigureNCRes();
