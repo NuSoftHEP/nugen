@@ -250,7 +250,7 @@ libdir	fq_dir		lib
 ####################################
 product		version		qual	flags		<table_format=2>
 art_root_io	v1_13_06	-
-dk2nugenie	v01_10_01q	-
+dk2nugenie	v01_10_02	-
 ifdh_art	v2_17_07	-
 nusimdata	v1_29_00	-
 nufinder        v1_02_01       -	only_for_build
@@ -309,13 +309,21 @@ end_product_list
 #   case it is optional.
 #
 ####################################
-qualifier	nusimdata	art_root_io	dk2nugenie	ifdh_art   notes
-c14:debug	c14:debug	c14:debug	c14:debug	c14:debug
-c14:prof	c14:prof	c14:prof	c14:prof	c14:prof
-e26:debug	e26:debug	e26:debug	e26:debug	e26:debug
-e26:prof	e26:prof	e26:prof	e26:prof	e26:prof
-e28:debug	e28:debug	e28:debug	e28:debug	e28:debug
-e28:prof	e28:prof	e28:prof	e28:prof	e28:prof
+qualifier        nusimdata	art_root_io	dk2nugenie	 ifdh_art   notes
+c14:debug        c14:debug	c14:debug	c14:debug	 c14:debug
+c14:prof         c14:prof	c14:prof	c14:prof	 c14:prof
+e26:debug        e26:debug	e26:debug	e26:debug	 e26:debug
+e26:prof         e26:prof	e26:prof	e26:prof	 e26:prof
+e26:geant4:debug e26:debug	e26:debug	e26:geant4:debug e26:debug
+e26:geant4:prof  e26:prof	e26:prof	e26:geant4:prof	 e26:prof
+e26:inclxx:debug e26:debug	e26:debug	e26:inclxx:debug e26:debug
+e26:inclxx:prof  e26:prof	e26:prof	e26:inclxx:prof	 e26:prof
+e28:debug        e28:debug	e28:debug	e28:debug	 e28:debug
+e28:prof         e28:prof	e28:prof	e28:prof	 e28:prof
+e28:geant4:debug e28:debug	e28:debug	e28:geant4:debug e28:debug
+e28:geant4:prof  e28:prof	e28:prof	e28:geant4:prof	 e28:prof
+e28:inclxx:debug e28:debug	e28:debug	e28:inclxx:debug e28:debug
+e28:inclxx:prof  e28:prof	e28:prof	e28:inclxx:prof	 e28:prof
 end_qualifier_list
 ####################################
 
