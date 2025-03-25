@@ -44,9 +44,6 @@
   #include "ReWeight/GSystUncertainty.h"
   #include "ReWeight/GReWeightUtils.h"
 
-//#include "Geo/ROOTGeomAnalyzer.h"
-//#include "Geo/GeomVolSelectorFiducial.h"
-//#include "Geo/GeomVolSelectorRockBox.h"
   #include "Utils/StringUtils.h"
   #include "Utils/XmlParserUtils.h"
   #include "Interaction/InitialState.h"
@@ -66,19 +63,6 @@
   #include "GENIE/Framework/Conventions/Constants.h"
   #include "GENIE/Framework/GHEP/GHepUtils.h"
   #include "GENIE/Framework/EventGen/EventRecord.h"
-
-//  #include "GENIE/Framework/Interaction/InitialState.h"
-//  #include "GENIE/Framework/Interaction/Interaction.h"
-//  #include "GENIE/Framework/Interaction/Kinematics.h"
-//  #include "GENIE/Framework/Interaction/KPhaseSpace.h"
-//  #include "GENIE/Framework/Interaction/ProcessInfo.h"
-//  #include "GENIE/Framework/Interaction/XclsTag.h"
-
-//  #include "GENIE/Framework/ParticleData/PDGCodes.h"
-//  #include "GENIE/Framework/ParticleData/PDGCodeList.h"
-//  #include "GENIE/Framework/ParticleData/PDGLibrary.h"
-//  #include "GENIE/Framework/GHEP/GHepUtils.h"
-//  #include "GENIE/Framework/GHEP/GHepParticle.h"
 
   #include "RwFramework/GReWeightI.h"
   #include "RwFramework/GSystSet.h"
@@ -102,11 +86,6 @@
   #include "RwCalculators/GReWeightNuXSecNC.h"
   #include "RwCalculators/GReWeightUtils.h"
 
-//#include "Geo/ROOTGeomAnalyzer.h"
-//#include "Geo/GeomVolSelectorFiducial.h"
-//#include "Geo/GeomVolSelectorRockBox.h"
-//#include "Utils/StringUtils.h"
-//#include "Utils/XmlParserUtils.h"
 
 #endif
 // Necessary because the GENIE LOG_* macros don't fully qualify Messenger
@@ -364,25 +343,83 @@ namespace rwgt {
         case rwgt::fReweightNormCCQE:
         case rwgt::fReweightNormCCQEenu:
         case rwgt::fReweightMaCCQEshape:
+        case rwgt::fReweightE0CCQEshape:
+          fMaCCQEModes ||= KnobMode::RateShape;
           configure_CCQE_calc = true;
+          break;
+
+        // CC QE Axial parameters - parameter mode
         case rwgt::fReweightMaCCQE:
           fReweightQEMA = true;
           break;
 
-        //CC QE Vector parameters
+        // other CCQE effects
+        case rwgt::fReweightAxFFCCQEshape:   // note: doesn't go in "shape+rate" collection above; this knob changes the underlying shape in a non-rate-conserving way
+        case rwgt::fReweightRPA_CCQE:
+        case rwgt::fReweightCoulombCCQE:
           configure_CCQE_calc = true;
+          break;
+
+        // CC QE Vector parameters (dipole)
         case rwgt::fReweightVecCCQEshape:
           fReweightQEVec = true;
           break;
 
-        //CC Resonance parameters
+        // Z-expansion (vector) parameters
+        case rwgt::fReweightZExpELFF:
+        case rwgt::fReweightZExpELFF_AP1:
+        case rwgt::fReweightZExpELFF_AP2:
+        case rwgt::fReweightZExpELFF_AP3:
+        case rwgt::fReweightZExpELFF_AP4:
+        case rwgt::fReweightZExpELFF_AN1:
+        case rwgt::fReweightZExpELFF_AN2:
+        case rwgt::fReweightZExpELFF_AN3:
+        case rwgt::fReweightZExpELFF_AN4:
+        case rwgt::fReweightZExpELFF_BP1:
+        case rwgt::fReweightZExpELFF_BP2:
+        case rwgt::fReweightZExpELFF_BP3:
+        case rwgt::fReweightZExpELFF_BP4:
+        case rwgt::fReweightZExpELFF_BN1:
+        case rwgt::fReweightZExpELFF_BN2:
+        case rwgt::fReweightZExpELFF_BN3:
+        case rwgt::fReweightZExpELFF_BN4:
           configure_ZexpVector_calc = true;
+          break;
+
+        // MEC parameters
+        case rwgt::fReweightEmpMEC_Mq2d:
+        case rwgt::fReweightEmpMEC_Mass:
+        case rwgt::fReweightEmpMEC_Width:
+        case rwgt::fReweightEmpMEC_FracPN_NC:
+        case rwgt::fReweightEmpMEC_FracPN_CC:
+        case rwgt::fReweightEmpMEC_FracCCQE:
+        case rwgt::fReweightEmpMEC_FracNCQE:
+        case rwgt::fReweightEmpMEC_FracPN_EM:
+        case rwgt::fReweightEmpMEC_FracEMQE:
+          have_MEC_Empirical = true;
           configure_MEC_calc = true;
+
+        case rwgt::fReweightNormCCMEC:
+        case rwgt::fReweightNormNCMEC:
+        case rwgt::fReweightNormEMMEC:
+        case rwgt::fReweightDecayAngMEC:
+        case rwgt::fReweightFracPN_CCMEC:
+        case rwgt::fReweightFracDelta_CCMEC:
+        case rwgt::fReweightXSecShape_CCMEC:
+          have_MEC_Theory = true;
           configure_MEC_calc = true;
+          break;
+
+
+        //CC Resonance parameters -- shape+rate mode
         case rwgt::fReweightNormCCRES:
         case rwgt::fReweightMaCCRESshape:
         case rwgt::fReweightMvCCRESshape:
+          fMaCCResModes ||= KnobMode::RateShape;
           configure_CCRes_calc = true;
+          break;
+
+        //CC Resonance parameters -- parameter mode
         case rwgt::fReweightMaCCRES:
         case rwgt::fReweightMvCCRES:
           fReweightCCRes = true;
@@ -392,17 +429,21 @@ namespace rwgt {
         case rwgt::fReweightNormNCRES:
         case rwgt::fReweightMaNCRESshape:
         case rwgt::fReweightMvNCRESshape:
+          fMaNCResModes ||= KnobMode::RateShape;
           configure_NCRes_calc = true;
+          break;
+
         case rwgt::fReweightMaNCRES:
         case rwgt::fReweightMvNCRES:
-          fReweightNCRes = true;
+          fMaNCResModes ||= KnobMode::Parameter;
           configure_NCRes_calc = true;
           break;
 
         //Coherent parameters
         case rwgt::fReweightMaCOHpi:
         case rwgt::fReweightR0COHpi:
-          fReweightCoh = true;
+        case rwgt::fReweightNormCCCOHpi:
+        case rwgt::fReweightNormNCCOHpi:
           configure_Coh_calc = true;
           break;
 
@@ -436,7 +477,18 @@ namespace rwgt {
         case rwgt::fReweightCV1uBYshape:
         case rwgt::fReweightCV2uBYshape:
         case rwgt::fReweightNormDISCC:
+          fDISModes ||= KnobMode::RateShape;
           configure_DIS_calc = true;
+          break;
+
+        // DIS parameters -- parameter mode
+        case rwgt::fReweightAhtBY:
+        case rwgt::fReweightBhtBY:
+        case rwgt::fReweightCV1uBY:
+        case rwgt::fReweightCV2uBY:
+          fDISModes ||= KnobMode::Parameter;
+          [[fallthrough]];
+
         case rwgt::fReweightRnubarnuCC:
           configure_DIS_calc = true;
           break;
@@ -492,17 +544,7 @@ namespace rwgt {
         case rwgt::fReweightBR1gamma:
         case rwgt::fReweightBR1eta:
         case rwgt::fReweightTheta_Delta2Npi:
-          fReweightResDecay = true;
-          break;
-
-        //Z-expansion parameters
-        case rwgt::fReweightZNormCCQE:
-        case rwgt::fReweightZExpA1CCQE:
-        case rwgt::fReweightZExpA2CCQE:
-        case rwgt::fReweightZExpA3CCQE:
-        case rwgt::fReweightZExpA4CCQE:
-        case rwgt::fReweightAxFFCCQEshape:
-          fReweightZexp = true;
+        case rwgt::fReweightTheta_Delta2NRad:
           configure_ResDecay_calcs = true;
           break;
 

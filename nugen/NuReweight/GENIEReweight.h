@@ -113,9 +113,10 @@ namespace rwgt{
 #endif
 
   protected:
-    bool fMaCCResShape;
-    bool fMaNCResShape;
-    bool fDISshape;
+    std::underlying_type_t<CCQEKnobMode> fMaCCQEModes;
+    std::underlying_type_t<KnobMode> fMaCCResModes;
+    std::underlying_type_t<KnobMode> fMaNCResModes;
+    std::underlying_type_t<KnobMode> fDISModes;
 
     bool fUseSigmaDef;
 
