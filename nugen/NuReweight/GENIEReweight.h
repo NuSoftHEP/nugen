@@ -29,6 +29,9 @@ namespace rwgt{
     GENIEReweight();
     ~GENIEReweight();
 
+    enum class KnobMode : unsigned int { Parameter = 1 << 0, RateShape = 1 << 1 };
+    enum class CCQEKnobMode : std::underlying_type_t<KnobMode> { Parameter = KnobMode::Parameter, RateShape = KnobMode::RateShape, ZExp = 1 << 2 };
+
 #ifndef __GCCXML__
 
     void AddReweightValue(ReweightLabel_t rLabel, double value);
@@ -60,7 +63,7 @@ namespace rwgt{
     void ReweightCCRes(double ma, double mv=0.0);
     void ReweightNCRes(double ma, double mv=0.0);
 
-    void ReweightCoh(double ma, double r0);
+    void ReweightCoh(double ma=-1, double r0=-1, double ccscale=1, double ncscale=1);
 
     void ReweightNonResRvp1pi(double sigma);
     void ReweightNonResRvbarp1pi(double sigma);

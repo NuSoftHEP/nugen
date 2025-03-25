@@ -105,7 +105,7 @@ using genie::Messenger;
 
 
 namespace rwgt {
-  ///<constructor
+  /// constructor
   GENIEReweight::GENIEReweight() :
         fUseSigmaDef(true) {
 
@@ -115,12 +115,12 @@ namespace rwgt {
     this->SetNominalValues();
   }
 
-  ///<destructor
+  /// destructor
   GENIEReweight::~GENIEReweight() {
     delete fWcalc;
   }
 
-  ///<Set the nominal values for the reweight parameters.
+  /// Set the nominal values for the reweight parameters.
   void GENIEReweight::SetNominalValues() {
     //CCQE Nominal Values
     fNominalParameters[(int)rwgt::fReweightMaNCEL] = 0.99;
@@ -307,14 +307,14 @@ namespace rwgt {
 
   }
 
-  ///<Return the nominal value for the given parameter.
+  /// Return the nominal value for the given parameter.
   double GENIEReweight::NominalParameterValue(ReweightLabel_t rLabel) {
     double nominal_value;
     nominal_value = fNominalParameters[rLabel];
     return nominal_value;
   }
 
-  ///<Return the configured value of the given parameter.
+  /// Return the configured value of the given parameter.
   double GENIEReweight::ReweightParameterValue(ReweightLabel_t rLabel) {
     int label = (int)rLabel;
     bool in_loop = false;
@@ -340,7 +340,7 @@ namespace rwgt {
     }
   }
 
-  ///<Add reweight parameters to the list
+  /// Add reweight parameters to the list
   void GENIEReweight::AddReweightValue(ReweightLabel_t rLabel, double value) {
     int label = (int)rLabel;
     LOG_INFO("GENIEReweight") << "Adding parameter: " <<  genie::rew::GSyst::AsString(genie::rew::EGSyst(label)) << ".  With value: " << value;
@@ -349,7 +349,7 @@ namespace rwgt {
 
   }
 
-  ///<Change a reweight parameter.  If it hasn't been added yet add it.
+  /// Change a reweight parameter.  If it hasn't been added yet add it.
   void GENIEReweight::ChangeParameterValue(ReweightLabel_t rLabel, double value) {
     int label = (int)rLabel;
     bool found = false;
@@ -364,7 +364,7 @@ namespace rwgt {
     }
   }
 
-  ///<Configure the weight calculators.
+  /// Configure the weight calculators.
   void GENIEReweight::Configure() {
     LOG_INFO("GENIEReweight") << "Configure weight calculator";
 
@@ -394,15 +394,14 @@ namespace rwgt {
 
       switch (fReWgtParameterName[i])
       {
-        //NC Elastic parameters
+        // NC Elastic parameters
         case rwgt::fReweightMaNCEL:
         case rwgt::fReweightEtaNCEL:
-          fReweightNCEL = true;
+          configure_NCEL_calc = true;
           break;
 
-        //CC QE Axial parameters
+        // CC QE Axial parameters - shape+rate mode
         case rwgt::fReweightNormCCQE:
-        case rwgt::fReweightNormCCQEenu:
         case rwgt::fReweightMaCCQEshape:
         case rwgt::fReweightE0CCQEshape:
           fMaCCQEModes ||= KnobMode::RateShape;
@@ -411,7 +410,19 @@ namespace rwgt {
 
         // CC QE Axial parameters - parameter mode
         case rwgt::fReweightMaCCQE:
-          fReweightQEMA = true;
+        case rwgt::fReweightE0CCQE:
+          fMaCCQEModes ||= KnobMode::Parameter;
+          configure_CCQE_calc = true;
+          break;
+
+        // Z-expansion (axial) parameters
+        case rwgt::fReweightZNormCCQE:
+        case rwgt::fReweightZExpA1CCQE:
+        case rwgt::fReweightZExpA2CCQE:
+        case rwgt::fReweightZExpA3CCQE:
+        case rwgt::fReweightZExpA4CCQE:
+          fMaCCQEModes ||= CCQEKnobMode::ZExp;
+          configure_CCQE_calc = true;
           break;
 
         // other CCQE effects
@@ -423,7 +434,7 @@ namespace rwgt {
 
         // CC QE Vector parameters (dipole)
         case rwgt::fReweightVecCCQEshape:
-          fReweightQEVec = true;
+          configure_QEVec_calc = true;
           break;
 
         // Z-expansion (vector) parameters
@@ -483,10 +494,11 @@ namespace rwgt {
         //CC Resonance parameters -- parameter mode
         case rwgt::fReweightMaCCRES:
         case rwgt::fReweightMvCCRES:
-          fReweightCCRes = true;
+          fMaCCResModes ||= KnobMode::Parameter;
+          configure_CCRes_calc = true;
           break;
 
-        //NC Resonance parameters
+        //NC Resonance parameters -- shape+rate mode
         case rwgt::fReweightNormNCRES:
         case rwgt::fReweightMaNCRESshape:
         case rwgt::fReweightMvNCRESshape:
@@ -525,14 +537,10 @@ namespace rwgt {
         case rwgt::fReweightRvbarnCC2pi:
         case rwgt::fReweightRvbarnNC1pi:
         case rwgt::fReweightRvbarnNC2pi:
-          fReweightResBkg = true;
+          configure_ResBkg_calc = true;
           break;
 
-        //DIS parameters
-        case rwgt::fReweightAhtBY:
-        case rwgt::fReweightBhtBY:
-        case rwgt::fReweightCV1uBY:
-        case rwgt::fReweightCV2uBY:
+        // DIS parameters -- rate+shape mode
         case rwgt::fReweightAhtBYshape:
         case rwgt::fReweightBhtBYshape:
         case rwgt::fReweightCV1uBYshape:
@@ -635,16 +643,16 @@ namespace rwgt {
 
   }
 
-  ///<Reconfigure the weight calculators
+  /// Reconfigure the weight calculators
   void GENIEReweight::Reconfigure() {
     delete fWcalc;
     fWcalc = new genie::rew::GReWeight();
     this->Configure();
   }
 
-  ///<Simple Configuration functions for configuring a single weight calculator
+  /// Simple Configuration functions for configuring a single weight calculator
 
-  ///<Simple Configuraiton of the NC elastic weight calculator
+  /// Simple Configuraiton of the NC elastic weight calculator
   void GENIEReweight::ReweightNCEL(double ma, double eta) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for NC Elastic Reweighting";
     if(ma!=0.0) {
@@ -656,10 +664,9 @@ namespace rwgt {
     this->Configure();
   }
 
-  ///<Simple Configurtion of the CCQE axial weight calculator
+  /// Simple Configuration of the CCQE axial weight calculator
   void GENIEReweight::ReweightQEMA(double ma) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for QE Axial Mass Reweighting";
-    fMaQEshape=false;
     this->AddReweightValue(rwgt::fReweightMaCCQE, ma);
     this->Configure();
   }
@@ -695,9 +702,9 @@ namespace rwgt {
     this->Configure();
   }
 
-  void GENIEReweight::ReweightQEZExp(double norm, double a1, double a2, double a3, double a4)
+  void GENIEReweight::ReweightQEZExpAxial(double norm, double a1, double a2, double a3, double a4)
   {
-    LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for Z-expansion QE Reweighting";
+    LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for Z-expansion QE Reweighting of axial vector FF";
     this->AddReweightValue(rwgt::fReweightZNormCCQE, norm);
     this->AddReweightValue(rwgt::fReweightZExpA1CCQE, a1);
     this->AddReweightValue(rwgt::fReweightZExpA2CCQE, a2);
@@ -787,7 +794,7 @@ namespace rwgt {
     this->Configure();
   }
 
-  ///<Simple Configurtion of the NC Resonance weight calculator
+  /// Simple Configuration of the NC Resonance weight calculator
   void GENIEReweight::ReweightNCRes(double ma, double mv) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for NC Resonance Reweighting";
     fMaNCResShape=false;
@@ -798,7 +805,7 @@ namespace rwgt {
     this->Configure();
   }
 
-  ///<Simple Configuration of the NC and CC Resonance weight calculator with the axial mass parameter for NC/CC ganged together
+  /// Simple Configuration of the NC and CC Resonance weight calculator with the axial mass parameter for NC/CC ganged together
   void GENIEReweight::ReweightResGanged(double ma, double mv) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for CC and NC Resonance Reweighting";
     fMaCCResShape=false;
@@ -828,7 +835,7 @@ namespace rwgt {
     this->Configure();
   }
 
-  ///<Simple Configuration of the Non-Resonance Background weight calculator.
+  /// Simple Configuration of the Non-Resonance Background weight calculator.
   //Here it is being configured for v+p and vbar + n (1 pi) type interactions
   void GENIEReweight::ReweightNonResRvp1pi(double sigma) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for  Non-Resonance Background Reweighting (Neutrino Single Pion)";
@@ -839,7 +846,7 @@ namespace rwgt {
     this->Configure();
   }
 
-  ///<Simple Configuration of the Non-Resonance Background weight calculator.
+  /// Simple Configuration of the Non-Resonance Background weight calculator.
   //Here it is being configured for v+n and vbar + p (1 pi) type interactions
   void GENIEReweight::ReweightNonResRvbarp1pi(double sigma) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for  Non-Resonance Background Reweighting (Anti-Neutrino Single Pion)";
@@ -850,7 +857,7 @@ namespace rwgt {
     this->Configure();
   }
 
-  ///<Simple Configuration of the Non-Resonance Background weight calculator.  Here it is being configured for v+p and vbar + n (2 pi) type interactions
+  /// Simple Configuration of the Non-Resonance Background weight calculator.  Here it is being configured for v+p and vbar + n (2 pi) type interactions
   void GENIEReweight::ReweightNonResRvp2pi(double sigma) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for  Non-Resonance Background Reweighting (Neutrino Two Pion)";
     this->AddReweightValue(rwgt::fReweightRvpCC2pi, sigma);
@@ -860,7 +867,7 @@ namespace rwgt {
     this->Configure();
   }
 
-  ///<Simple Configuration of the Non-Resonance Background weight calculator.
+  /// Simple Configuration of the Non-Resonance Background weight calculator.
   // Here it is being configured for v+n and vbar + p (2 pi) type interactions
   void GENIEReweight::ReweightNonResRvbarp2pi(double sigma) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for  Non-Resonance Background Reweighting (Anti-Neutrino Two Pion)";
@@ -871,7 +878,7 @@ namespace rwgt {
     this->Configure();
   }
 
-  ///<Simple Configuration of the Resonance decay model weight calculator
+  /// Simple Configuration of the Resonance decay model weight calculator
   void GENIEReweight::ReweightResDecay(double gamma, double eta, double theta) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for Resoncance Decay Parameters";
     if(gamma!=0.0) {
@@ -902,7 +909,7 @@ namespace rwgt {
     this->Configure();
   }
 
-  ///<Simple Configuration of the DIS FF model weight calculator
+  /// Simple Configuration of the DIS FF model weight calculator
   void GENIEReweight::ReweightDIS(double aht, double bht, double cv1u, double cv2u) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for DIS Form Factor Model Reweighting";
     fDISshape = false;
@@ -913,7 +920,7 @@ namespace rwgt {
       this->AddReweightValue(rwgt::fReweightBhtBY, bht);
     }
     if(cv1u != 0.0) {
-      this->AddReweightValue(rwgt:: fReweightCV1uBY, cv1u);
+      this->AddReweightValue(rwgt::fReweightCV1uBY, cv1u);
     }
     if(cv2u != 0.0) {
       this->AddReweightValue(rwgt::fReweightCV2uBY, cv2u);
@@ -921,14 +928,14 @@ namespace rwgt {
     this->Configure();
   }
 
-  ///<Simple Configuration of the DIS nuclear model
+  /// Simple Configuration of the DIS nuclear model
   void GENIEReweight::ReweightDISnucl(bool mode) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for DIS Nuclear Model";
     this->AddReweightValue(rwgt::fReweightDISNuclMod, mode);
     this->Configure();
   }
 
-  ///<Simple Configuration of the DIS AGKY hadronization model
+  /// Simple Configuration of the DIS AGKY hadronization model
   void GENIEReweight::ReweightAGKY(double xF, double pT) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for DIS AGKY Hadronization Model Reweighting";
     if(xF==0.0) {
@@ -940,7 +947,7 @@ namespace rwgt {
     this->Configure();
   }
 
-  ///<Simple Configuration of the Intranuke Nuclear model
+  /// Simple Configuration of the Intranuke Nuclear model
   void GENIEReweight::ReweightIntraNuke(ReweightLabel_t name, double sigma) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for Intranuke Model Reweighting";
     if ( (name==rwgt::fReweightMFP_pi) ||
@@ -967,14 +974,14 @@ namespace rwgt {
     this->Configure();
   }
 
-  ///<Simple Configuration of the Formation Zone reweight calculator
+  /// Simple Configuration of the Formation Zone reweight calculator
   void GENIEReweight::ReweightFormZone(double sigma) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for Formation Zone Reweighting";
     this->AddReweightValue(rwgt::fReweightFormZone, sigma);
     this->Configure();
   }
 
-  ///<Simple Configuration of the Fermigas model reweight calculator
+  /// Simple Configuration of the Fermigas model reweight calculator
   void GENIEReweight::ReweightFGM(double kF, double sf) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for Fermi Gas Model Reweighting";
     this->AddReweightValue(rwgt::fReweightCCQEPauliSupViaKF, kF);
@@ -982,25 +989,61 @@ namespace rwgt {
     this->Configure();
   }
 
-  ///<End of Simple Reweight Configurations.
+  /// End of Simple Reweight Configurations.
 
-  ///<Private Member functions to configure individual weight calculators.
-  ///<Configure the NCEL weight calculator
+  // Private Member functions to configure individual weight calculators.
+
+  /// Configure the "CCQE" weight calculator.
+  /// (This is a bit confusing, because there's *another* weight calculator,
+  ///  configured below, that handles the vector form factors for CCQE.
+  ///  Ultimately this comes down to GENIE's internal diagonalization of the knobs,
+  ///  so we can't do anything about it.)
+  void GENIEReweight::ConfigureCCQE()
+  {
+    for (const auto mode : {CCQEKnobMode::RateShape, CCQEKnobMode::Parameter, CCQEKnobMode::ZExp})
+    {
+      if (! (fMaCCQEModes && mode) )
+        continue;
+
+      auto calc = new GReWeightNuXSecCCQE;
+      std::string mode = ""
+      if (mode == CCQEKnobMode::RateShape)
+      {
+        mode = "rate+shape";
+        calc->SetMode(GReWeightNuXSecCCQE::kModeNormAndMaShape);
+      }
+      else if (mode == CCQEKnobMode::Parameter)
+      {
+        mode = "parameter";
+        calc->SetMode(GReWeightNuXSecCCQE::kModeMa);
+      }
+      else if (mode == CCQEKnobMode::ZExp)
+      {
+        mode = "z-expansion";
+        calc->SetMode(GReWeightNuXSecCCQE::kModeZExp);
+      }
+      else
+      {
+        std::cerr << "Reweight::ConfigureCCQE(): Unrecognized CCQEKnobMode: " << mode << "   Abort.\n"
+        abort();
+      }
+      fWcalc->AdoptWghtCalc( "xsec_ccqe_" + mode, calc);
+      LOG_INFO("GENIEReweight") << "Adding CCQE weight calculator in '" << mode << "' axial mass mode";
+    }
+  }
+
+  /// Configure the NCEL weight calculator
   void GENIEReweight::ConfigureNCEL() {
     LOG_INFO("GENIEReweight") << "Adding NC elastic weight calculator";
     fWcalc->AdoptWghtCalc( "xsec_ncel",       new GReWeightNuXSecNCEL      );
   }
 
-  ///<Configure the MaQE weight calculator
-  void GENIEReweight::ConfigureQEMA() {
-    LOG_INFO("GENIEReweight") << "Adding CCQE axial FF weight calculator ";
-    fWcalc->AdoptWghtCalc( "xsec_ccqe",       new GReWeightNuXSecCCQE      );
-  }
-
-  ///<Configure the QE vector FF weight calculator
-  void GENIEReweight::ConfigureQEVec() {
-    LOG_INFO("GENIEReweight") << "Adding CCQE vector FF weight calculator";
-    fWcalc->AdoptWghtCalc( "xsec_ccqe_vec",   new GReWeightNuXSecCCQEvec   );
+  /// Configure the QE vector FF weight calculator
+  void GENIEReweight::ConfigureQEVec()
+  {
+    LOG_INFO("GENIEReweight") << "Adding CCQE vector FF weight calculator "
+                              << "in vector mass (QE) mode";
+      fWcalc->AdoptWghtCalc( "xsec_ccqe_vec",   new GReWeightNuXSecCCQEvec   );
   }
 
   /// Configure the z-expansion QE vector FF weight calculator
@@ -1019,94 +1062,159 @@ namespace rwgt {
       LOG_INFO("GENIEReweight") << " for Empirical MEC";
       fWcalc->AdoptWghtCalc( "xsec_empirical_mec",   new GReWeightXSecEmpiricalMEC   );
     }
-    else {
-      LOG_INFO("GENIEReweight") << "in axial mass (Res) shape only mode";
+
+    if (have_MEC_Theory)
+    {
+      LOG_INFO("GENIEReweight") << " for theory-based MEC models";
+      fWcalc->AdoptWghtCalc( "xsec_theory_mec",   new GReWeightXSecMEC   );
     }
   }
 
-  ///<Configure the NCRES calculator
-  void GENIEReweight::ConfigureNCRes() {
-    LOG_INFO("GENIEReweight") << "Adding NC resonance weight calculator";
-    fWcalc->AdoptWghtCalc( "xsec_ncres",      new GReWeightNuXSecNCRES     );
-    if(!fMaNCResShape) {
-      LOG_INFO("GENIEReweight") << "in axial mass (Res) rate+shape mode";
-      GReWeightNuXSecNCRES * rwncres = dynamic_cast<GReWeightNuXSecNCRES *> (fWcalc->WghtCalc("xsec_ncres"));
-      rwncres->SetMode(GReWeightNuXSecNCRES::kModeMaMv);
-    }
-    else {
-      LOG_INFO("GENIEReweight") << "in axial mass (Res) shape only mode";
+  /// Configure the CCRES calculator
+  void GENIEReweight::ConfigureCCRes()
+  {
+    for (const auto mode : {KnobMode::RateShape, KnobMode::Parameter})
+    {
+      if (! (fMaCCResModes && mode) )
+        continue;
+
+      auto calc = new GReWeightNuXSecCCRES;
+      std::string mode = ""
+      if (mode == KnobMode::RateShape)
+      {
+        mode = "rate+shape";
+        calc->SetMode(GReWeightNuXSecCCRES::kModeNormAndMaMvShape);
+      }
+      else if (mode == KnobMode::Parameter)
+      {
+        mode = "parameter";
+        calc->SetMode(GReWeightNuXSecCCRES::kModeMaMv);
+      }
+      else
+      {
+        std::cerr << "GENIEReweight::ConfigureCCRes(): Unrecognized KnobMode: " << mode << "   Abort.\n"
+        abort();
+      }
+      fWcalc->AdoptWghtCalc( "xsec_ccres_" + mode, calc);
+      LOG_INFO("GENIEReweight") << "Adding CC resonance weight calculator in '" << mode << "' axial mass mode";
     }
   }
 
-  ///<Configure the ResBkg (kno) weight calculator
+  /// Configure the NCRES calculator
+  void GENIEReweight::ConfigureNCRes()
+  {
+    for (const auto mode : {KnobMode::RateShape, KnobMode::Parameter})
+    {
+      if (! (fMaCCResModes && mode) )
+        continue;
+
+      auto calc = new GReWeightNuXSecNCRES;
+      std::string mode = ""
+      if (mode == KnobMode::RateShape)
+      {
+        mode = "rate+shape";
+        calc->SetMode(GReWeightNuXSecNCRES::kModeNormAndMaMvShape);
+      }
+      else if (mode == KnobMode::Parameter)
+      {
+        mode = "parameter";
+        calc->SetMode(GReWeightNuXSecNCRES::kModeMaMv);
+      }
+      else
+      {
+        std::cerr << "GENIEReweight::ConfigureNCRes(): Unrecognized KnobMode: " << mode << "   Abort.\n"
+        abort();
+      }
+      fWcalc->AdoptWghtCalc( "xsec_ncres_" + mode, calc);
+      LOG_INFO("GENIEReweight") << "Adding NC resonance weight calculator in '" << mode << "' axial mass mode";
+    }
+  }
+
+  /// Configure the ResBkg (kno) weight calculator
   void GENIEReweight::ConfigureResBkg() {
     LOG_INFO("GENIEReweight") << "Adding low Q^2 DIS (KNO) weight calculator";
     fWcalc->AdoptWghtCalc( "xsec_nonresbkg",  new GReWeightNonResonanceBkg );
   }
 
-  ///<Configure the ResDecay weight calculator
+  /// Configure the ResDecay weight calculator
   void GENIEReweight::ConfgureResDecay() {
-    LOG_INFO("GENIEReweight") << "Adding resonance decay weight calculator";
+    LOG_INFO("GENIEReweight") << "Adding resonance decay weight calculators";
     fWcalc->AdoptWghtCalc( "hadro_res_decay", new GReWeightResonanceDecay  );
+    fWcalc->AdoptWghtCalc( "delta_res_decay", new GReWeightDeltaradAngle  );
   }
 
-  ///<Configure the NC weight calculator
+  /// Configure the NC weight calculator
   void GENIEReweight::ConfigureNC() {
     LOG_INFO("GENIEReweight") << "Adding NC total cross section weight calculator";
     fWcalc->AdoptWghtCalc( "xsec_nc", new GReWeightNuXSecNC );
   }
 
-  ///<Configure the DIS (Bodek-Yang) weight calculator
+  /// Configure the DIS (Bodek-Yang) weight calculator
   void GENIEReweight::ConfigureDIS() {
-    LOG_INFO("GENIEReweight") << "Adding DIS (Bodek-Yang) weight calculator";
-    fWcalc->AdoptWghtCalc( "xsec_dis",        new GReWeightNuXSecDIS       );
-    if(!fDISshape) {
-      LOG_INFO("GENIEReweight") << "in shape+rate mode";
-      GReWeightNuXSecDIS * rwdis = dynamic_cast<GReWeightNuXSecDIS *> (fWcalc->WghtCalc("xsec_dis"));
-      rwdis->SetMode(GReWeightNuXSecDIS::kModeABCV12u);
-    }
-    else {
-      LOG_INFO("GENIEReweight") << "in shape only mode";
+    for (const auto mode : {KnobMode::RateShape, KnobMode::Parameter})
+    {
+      if (! (fMaCCResModes && mode) )
+        continue;
+
+      auto calc = new GReWeightNuXSecDIS;
+      std::string mode = ""
+      if (mode == KnobMode::RateShape)
+      {
+        mode = "rate+shape";
+        calc->SetMode(GReWeightNuXSecDIS::kModeABCV12uShape);
+      }
+      else if (mode == KnobMode::Parameter)
+      {
+        mode = "parameter";
+        calc->SetMode(GReWeightNuXSecDIS::kModeABCV12u);
+      }
+      else
+      {
+        std::cerr << "GENIEReweight::ConfigureDIS(): Unrecognized KnobMode: " << mode << "   Abort.\n"
+        abort();
+      }
+      fWcalc->AdoptWghtCalc( "xsec_dis_" + mode, calc);
+      LOG_INFO("GENIEReweight") << "Adding NC resonance weight calculator in '" << mode << "' axial mass mode";
     }
   }
 
-  ///<Configure the Coherant model weight calculator
+  /// Configure the Coherent model weight calculator
   void GENIEReweight::ConfigureCoh() {
     LOG_INFO("GENIEReweight") << "Adding coherant interaction model weight calculator";
     fWcalc->AdoptWghtCalc( "xsec_coh",        new GReWeightNuXSecCOH       );
   }
 
-  ///<Configure the hadronization (AGKY) weight calculator
+  /// Configure the hadronization (AGKY) weight calculator
   void GENIEReweight::ConfigureAGKY() {
     LOG_INFO("GENIEReweight") << "Adding hadronization (AGKY) model weight calculator";
     fWcalc->AdoptWghtCalc( "hadro_agky",      new GReWeightAGKY            );
   }
 
-  ///<Configure the DIS nuclear model weight calculator
+  /// Configure the DIS nuclear model weight calculator
   void GENIEReweight::ConfigureDISNucMod() {
     LOG_INFO("GENIEReweight") << "Adding DIS nuclear model weight calculator";
     fWcalc->AdoptWghtCalc( "nuclear_dis",     new GReWeightDISNuclMod      );
   }
 
-  ///<Configure the FG model weight calculator
+  /// Configure the FG model weight calculator
   void GENIEReweight::ConfigureFGM() {
     LOG_INFO("GENIEReweight") << "Adding Fermi Gas Model (FGM) weight calculator";
     fWcalc->AdoptWghtCalc( "nuclear_qe",      new GReWeightFGM             );
   }
 
-  ///<Configure the Formation Zone weight calculator
+  /// Configure the Formation Zone weight calculator
   void GENIEReweight::ConfigureFZone() {
     LOG_INFO("GENIEReweight") << "Adding Formation Zone weight calculator";
     fWcalc->AdoptWghtCalc( "hadro_fzone",     new GReWeightFZone           );
   }
 
-  ///<Configure the intranuke weight calculator
+  /// Configure the intranuke weight calculator
   void GENIEReweight::ConfigureINuke() {
     LOG_INFO("GENIEReweight") << "Adding the Intra-Nuke weight calculator";
     fWcalc->AdoptWghtCalc( "hadro_intranuke", new GReWeightINuke           );
   }
 
-  ///<configure the weight parameters being used
+  /// configure the weight parameters being used
   void GENIEReweight::ConfigureParameters() {
     GSystSet & syst = fWcalc->Systematics();
     for(unsigned int i = 0; i < fReWgtParameterName.size(); i++) {
@@ -1147,7 +1255,7 @@ namespace rwgt {
     return sigma;
   }
 
-  ///<Calculate the weights
+  /// Calculate the weights
   //double GENIEReweight::CalcWeight(simb::MCTruth truth, simb::GTruth gtruth) {
   double GENIEReweight::CalculateWeight(const genie::EventRecord& evr) const {
     //genie::EventRecord evr = this->RetrieveGHEP(truth, gtruth);
