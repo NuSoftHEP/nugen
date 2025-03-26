@@ -71,19 +71,23 @@
   #include "RwFramework/GSystUncertainty.h"
   #include "RwCalculators/GReWeightNuXSecNCEL.h"
   #include "RwCalculators/GReWeightNuXSecCCQE.h"
+  #include "RwCalculators/GReWeightNuXSecCCQEvec.h"
+  #include "RwCalculators/GReWeightNuXSecCCQEELFF.h"
+  #include "RwCalculators/GReWeightXSecMEC.h"
+  #include "RwCalculators/GReWeightXSecEmpiricalMEC.h"
   #include "RwCalculators/GReWeightNuXSecCCRES.h"
+  #include "RwCalculators/GReWeightNuXSecNCRES.h"
+  #include "RwCalculators/GReWeightResonanceDecay.h"
+  #include "RwCalculators/GReWeightDeltaradAngle.h"
   #include "RwCalculators/GReWeightNuXSecCOH.h"
   #include "RwCalculators/GReWeightNonResonanceBkg.h"
-  #include "RwCalculators/GReWeightFGM.h"
+  #include "RwCalculators/GReWeightNuXSecDIS.h"
+  #include "RwCalculators/GReWeightAGKY.h"
   #include "RwCalculators/GReWeightDISNuclMod.h"
-  #include "RwCalculators/GReWeightResonanceDecay.h"
+  #include "RwCalculators/GReWeightNuXSecNC.h"
+  #include "RwCalculators/GReWeightFGM.h"
   #include "RwCalculators/GReWeightFZone.h"
   #include "RwCalculators/GReWeightINuke.h"
-  #include "RwCalculators/GReWeightAGKY.h"
-  #include "RwCalculators/GReWeightNuXSecCCQEvec.h"
-  #include "RwCalculators/GReWeightNuXSecNCRES.h"
-  #include "RwCalculators/GReWeightNuXSecDIS.h"
-  #include "RwCalculators/GReWeightNuXSecNC.h"
   #include "RwCalculators/GReWeightUtils.h"
 
 
@@ -928,8 +932,6 @@ namespace rwgt {
         std::cerr << "GENIEReweight::ConfigureNCRes(): Unrecognized KnobMode: " << modeStr << "   Abort.\n";
         abort();
       }
-      fWcalc->AdoptWghtCalc( "xsec_ncres_" + mode, calc);
-      LOG_INFO("GENIEReweight") << "Adding NC resonance weight calculator in '" << mode << "' axial mass mode";
       fWcalc->AdoptWghtCalc( "xsec_ncres_" + modeStr, calc);
       LOG_INFO("GENIEReweight") << "Adding NC resonance weight calculator in '" << modeStr << "' axial mass mode";
     }
