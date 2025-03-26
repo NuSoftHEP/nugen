@@ -193,9 +193,6 @@ namespace rwgt {
          configure_INuke_calc = false,
          configure_MEC_calc = false;
 
-    bool have_MEC_Empirical = false,
-         have_MEC_Theory = false;
-
     for(unsigned int i = 0; i < fReWgtParameterName.size(); i++) {
 
       switch (fReWgtParameterName[i])
@@ -210,14 +207,14 @@ namespace rwgt {
         case rwgt::fReweightNormCCQE:
         case rwgt::fReweightMaCCQEshape:
         case rwgt::fReweightE0CCQEshape:
-          fMaCCQEModes ||= KnobMode::RateShape;
+          fMaCCQEModes |= CCQEKnobMode::RateShape;
           configure_CCQE_calc = true;
           break;
 
         // CC QE Axial parameters - parameter mode
         case rwgt::fReweightMaCCQE:
         case rwgt::fReweightE0CCQE:
-          fMaCCQEModes ||= KnobMode::Parameter;
+          fMaCCQEModes |= CCQEKnobMode::Parameter;
           configure_CCQE_calc = true;
           break;
 
@@ -227,7 +224,7 @@ namespace rwgt {
         case rwgt::fReweightZExpA2CCQE:
         case rwgt::fReweightZExpA3CCQE:
         case rwgt::fReweightZExpA4CCQE:
-          fMaCCQEModes ||= CCQEKnobMode::ZExp;
+          fMaCCQEModes |= CCQEKnobMode::ZExp;
           configure_CCQE_calc = true;
           break;
 
@@ -274,7 +271,7 @@ namespace rwgt {
         case rwgt::fReweightEmpMEC_FracNCQE:
         case rwgt::fReweightEmpMEC_FracPN_EM:
         case rwgt::fReweightEmpMEC_FracEMQE:
-          have_MEC_Empirical = true;
+          fMECTypes |= MECType::Empirical;
           configure_MEC_calc = true;
 
         case rwgt::fReweightNormCCMEC:
@@ -284,7 +281,7 @@ namespace rwgt {
         case rwgt::fReweightFracPN_CCMEC:
         case rwgt::fReweightFracDelta_CCMEC:
         case rwgt::fReweightXSecShape_CCMEC:
-          have_MEC_Theory = true;
+          fMECTypes |= MECType::Theory;
           configure_MEC_calc = true;
           break;
 
@@ -293,14 +290,14 @@ namespace rwgt {
         case rwgt::fReweightNormCCRES:
         case rwgt::fReweightMaCCRESshape:
         case rwgt::fReweightMvCCRESshape:
-          fMaCCResModes ||= KnobMode::RateShape;
+          fMaCCResModes |= KnobMode::RateShape;
           configure_CCRes_calc = true;
           break;
 
         //CC Resonance parameters -- parameter mode
         case rwgt::fReweightMaCCRES:
         case rwgt::fReweightMvCCRES:
-          fMaCCResModes ||= KnobMode::Parameter;
+          fMaCCResModes |= KnobMode::Parameter;
           configure_CCRes_calc = true;
           break;
 
@@ -308,13 +305,13 @@ namespace rwgt {
         case rwgt::fReweightNormNCRES:
         case rwgt::fReweightMaNCRESshape:
         case rwgt::fReweightMvNCRESshape:
-          fMaNCResModes ||= KnobMode::RateShape;
+          fMaNCResModes |= KnobMode::RateShape;
           configure_NCRes_calc = true;
           break;
 
         case rwgt::fReweightMaNCRES:
         case rwgt::fReweightMvNCRES:
-          fMaNCResModes ||= KnobMode::Parameter;
+          fMaNCResModes |= KnobMode::Parameter;
           configure_NCRes_calc = true;
           break;
 
@@ -352,7 +349,7 @@ namespace rwgt {
         case rwgt::fReweightCV1uBYshape:
         case rwgt::fReweightCV2uBYshape:
         case rwgt::fReweightNormDISCC:
-          fDISModes ||= KnobMode::RateShape;
+          fDISModes |= KnobMode::RateShape;
           configure_DIS_calc = true;
           break;
 
@@ -361,7 +358,7 @@ namespace rwgt {
         case rwgt::fReweightBhtBY:
         case rwgt::fReweightCV1uBY:
         case rwgt::fReweightCV2uBY:
-          fDISModes ||= KnobMode::Parameter;
+          fDISModes |= KnobMode::Parameter;
           [[fallthrough]];
 
         case rwgt::fReweightRnubarnuCC:
@@ -808,33 +805,33 @@ namespace rwgt {
   {
     for (const auto mode : {CCQEKnobMode::RateShape, CCQEKnobMode::Parameter, CCQEKnobMode::ZExp})
     {
-      if (! (fMaCCQEModes && mode) )
+      if (! (fMaCCQEModes.IsSet(mode)) )
         continue;
 
       auto calc = new GReWeightNuXSecCCQE;
-      std::string mode = ""
+      std::string modeStr = "";
       if (mode == CCQEKnobMode::RateShape)
       {
-        mode = "rate+shape";
+        modeStr = "rate+shape";
         calc->SetMode(GReWeightNuXSecCCQE::kModeNormAndMaShape);
       }
       else if (mode == CCQEKnobMode::Parameter)
       {
-        mode = "parameter";
+        modeStr = "parameter";
         calc->SetMode(GReWeightNuXSecCCQE::kModeMa);
       }
       else if (mode == CCQEKnobMode::ZExp)
       {
-        mode = "z-expansion";
+        modeStr = "z-expansion";
         calc->SetMode(GReWeightNuXSecCCQE::kModeZExp);
       }
       else
       {
-        std::cerr << "Reweight::ConfigureCCQE(): Unrecognized CCQEKnobMode: " << mode << "   Abort.\n"
+        std::cerr << "Reweight::ConfigureCCQE(): Unrecognized CCQEKnobMode: " << modeStr << "   Abort.\n";
         abort();
       }
-      fWcalc->AdoptWghtCalc( "xsec_ccqe_" + mode, calc);
-      LOG_INFO("GENIEReweight") << "Adding CCQE weight calculator in '" << mode << "' axial mass mode";
+      fWcalc->AdoptWghtCalc( "xsec_ccqe_" + modeStr, calc);
+      LOG_INFO("GENIEReweight") << "Adding CCQE weight calculator in '" << modeStr << "' axial mass mode";
     }
   }
 
@@ -863,13 +860,13 @@ namespace rwgt {
   void GENIEReweight::ConfigureMEC()
   {
     LOG_INFO("GENIEReweight") << "Adding MEC weight calculator";
-    if (have_MEC_Empirical)
+    if (fMECTypes.IsSet(MECType::Empirical))
 	{
       LOG_INFO("GENIEReweight") << " for Empirical MEC";
       fWcalc->AdoptWghtCalc( "xsec_empirical_mec",   new GReWeightXSecEmpiricalMEC   );
     }
 
-    if (have_MEC_Theory)
+    if (fMECTypes.IsSet(MECType::Theory))
     {
       LOG_INFO("GENIEReweight") << " for theory-based MEC models";
       fWcalc->AdoptWghtCalc( "xsec_theory_mec",   new GReWeightXSecMEC   );
@@ -881,28 +878,28 @@ namespace rwgt {
   {
     for (const auto mode : {KnobMode::RateShape, KnobMode::Parameter})
     {
-      if (! (fMaCCResModes && mode) )
+      if (! (fMaCCResModes.IsSet(mode)) )
         continue;
 
       auto calc = new GReWeightNuXSecCCRES;
-      std::string mode = ""
+      std::string modeStr = "";
       if (mode == KnobMode::RateShape)
       {
-        mode = "rate+shape";
+        modeStr = "rate+shape";
         calc->SetMode(GReWeightNuXSecCCRES::kModeNormAndMaMvShape);
       }
       else if (mode == KnobMode::Parameter)
       {
-        mode = "parameter";
+        modeStr = "parameter";
         calc->SetMode(GReWeightNuXSecCCRES::kModeMaMv);
       }
       else
       {
-        std::cerr << "GENIEReweight::ConfigureCCRes(): Unrecognized KnobMode: " << mode << "   Abort.\n"
+        std::cerr << "GENIEReweight::ConfigureCCRes(): Unrecognized KnobMode: " << modeStr << "   Abort.\n";
         abort();
       }
-      fWcalc->AdoptWghtCalc( "xsec_ccres_" + mode, calc);
-      LOG_INFO("GENIEReweight") << "Adding CC resonance weight calculator in '" << mode << "' axial mass mode";
+      fWcalc->AdoptWghtCalc( "xsec_ccres_" + modeStr, calc);
+      LOG_INFO("GENIEReweight") << "Adding CC resonance weight calculator in '" << modeStr << "' axial mass mode";
     }
   }
 
@@ -911,28 +908,30 @@ namespace rwgt {
   {
     for (const auto mode : {KnobMode::RateShape, KnobMode::Parameter})
     {
-      if (! (fMaCCResModes && mode) )
+      if (! (fMaCCResModes.IsSet(mode)) )
         continue;
 
       auto calc = new GReWeightNuXSecNCRES;
-      std::string mode = ""
+      std::string modeStr = "";
       if (mode == KnobMode::RateShape)
       {
-        mode = "rate+shape";
+        modeStr = "rate+shape";
         calc->SetMode(GReWeightNuXSecNCRES::kModeNormAndMaMvShape);
       }
       else if (mode == KnobMode::Parameter)
       {
-        mode = "parameter";
+        modeStr = "parameter";
         calc->SetMode(GReWeightNuXSecNCRES::kModeMaMv);
       }
       else
       {
-        std::cerr << "GENIEReweight::ConfigureNCRes(): Unrecognized KnobMode: " << mode << "   Abort.\n"
+        std::cerr << "GENIEReweight::ConfigureNCRes(): Unrecognized KnobMode: " << modeStr << "   Abort.\n";
         abort();
       }
       fWcalc->AdoptWghtCalc( "xsec_ncres_" + mode, calc);
       LOG_INFO("GENIEReweight") << "Adding NC resonance weight calculator in '" << mode << "' axial mass mode";
+      fWcalc->AdoptWghtCalc( "xsec_ncres_" + modeStr, calc);
+      LOG_INFO("GENIEReweight") << "Adding NC resonance weight calculator in '" << modeStr << "' axial mass mode";
     }
   }
 
@@ -959,28 +958,28 @@ namespace rwgt {
   void GENIEReweight::ConfigureDIS() {
     for (const auto mode : {KnobMode::RateShape, KnobMode::Parameter})
     {
-      if (! (fMaCCResModes && mode) )
+      if (! (fMaCCResModes.IsSet(mode)) )
         continue;
 
       auto calc = new GReWeightNuXSecDIS;
-      std::string mode = ""
+      std::string modeStr = "";
       if (mode == KnobMode::RateShape)
       {
-        mode = "rate+shape";
+        modeStr = "rate+shape";
         calc->SetMode(GReWeightNuXSecDIS::kModeABCV12uShape);
       }
       else if (mode == KnobMode::Parameter)
       {
-        mode = "parameter";
+        modeStr = "parameter";
         calc->SetMode(GReWeightNuXSecDIS::kModeABCV12u);
       }
       else
       {
-        std::cerr << "GENIEReweight::ConfigureDIS(): Unrecognized KnobMode: " << mode << "   Abort.\n"
+        std::cerr << "GENIEReweight::ConfigureDIS(): Unrecognized KnobMode: " << modeStr << "   Abort.\n";
         abort();
       }
-      fWcalc->AdoptWghtCalc( "xsec_dis_" + mode, calc);
-      LOG_INFO("GENIEReweight") << "Adding NC resonance weight calculator in '" << mode << "' axial mass mode";
+      fWcalc->AdoptWghtCalc( "xsec_dis_" + modeStr, calc);
+      LOG_INFO("GENIEReweight") << "Adding NC resonance weight calculator in '" << modeStr << "' axial mass mode";
     }
   }
 

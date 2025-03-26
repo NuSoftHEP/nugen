@@ -12,6 +12,7 @@
 #include <set>
 #include <fstream>
 #include "nugen/NuReweight/ReweightLabels.h"
+#include "nugen/NuReweight/BitFlags.h"
 
 //namespace simb  { class MCTruth;      }
 //namespace simb  { class GTruth;       }
@@ -25,12 +26,20 @@ namespace rwgt{
 
   class GENIEReweight {
 
+    using enum_type = unsigned int;
+
   public:
     GENIEReweight();
     ~GENIEReweight();
 
-    enum class KnobMode : unsigned int { Parameter = 1 << 0, RateShape = 1 << 1 };
-    enum class CCQEKnobMode : std::underlying_type_t<KnobMode> { Parameter = KnobMode::Parameter, RateShape = KnobMode::RateShape, ZExp = 1 << 2 };
+    enum class KnobMode : enum_type { Parameter = 1 << 0, RateShape = 1 << 1 };
+    enum class CCQEKnobMode : enum_type
+    {
+      Parameter = static_cast<enum_type>(KnobMode::Parameter),
+      RateShape = static_cast<enum_type>(KnobMode::RateShape),
+      ZExp = 1 << 2
+    };
+    enum class MECType : enum_type { Empirical = 1 << 0, Theory = 1 << 1 };
 
 #ifndef __GCCXML__
 
@@ -121,10 +130,12 @@ namespace rwgt{
 #endif
 
   protected:
-    std::underlying_type_t<CCQEKnobMode> fMaCCQEModes;
-    std::underlying_type_t<KnobMode> fMaCCResModes;
-    std::underlying_type_t<KnobMode> fMaNCResModes;
-    std::underlying_type_t<KnobMode> fDISModes;
+    util::BitFlags<CCQEKnobMode> fMaCCQEModes;
+    util::BitFlags<KnobMode> fMaCCResModes;
+    util::BitFlags<KnobMode> fMaNCResModes;
+    util::BitFlags<KnobMode> fDISModes;
+
+    util::BitFlags<MECType> fMECTypes;
 
     bool fUseSigmaDef;
 
