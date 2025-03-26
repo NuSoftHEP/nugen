@@ -37,7 +37,6 @@ namespace rwgt{
     void AddReweightValue(ReweightLabel_t rLabel, double value);
     void ChangeParameterValue(ReweightLabel_t rLabel, double value);
 
-    double NominalParameterValue(ReweightLabel_t rLabel);
     double ReweightParameterValue(ReweightLabel_t rLabel);
 
     genie::rew::GReWeight* WeightCalculator() {return fWcalc;}
@@ -98,7 +97,6 @@ namespace rwgt{
     void UseSigmaDef()    {fUseSigmaDef=true;}
     void UseStandardDef() {fUseSigmaDef=false;}
 
-    void SetNominalValues();
     double CalculateSigma(ReweightLabel_t label, double value);
 
     double CalculateWeight(const genie::EventRecord& evr) const;
@@ -132,8 +130,6 @@ namespace rwgt{
 
     std::vector<int> fReWgtParameterName;
     std::vector<double> fReWgtParameterValue;
-
-    std::map<int, double> fNominalParameters;
 
     genie::rew::GReWeight* fWcalc;
 
