@@ -59,6 +59,8 @@ namespace rwgt{
     void ReweightQEMA(double ma);
     void ReweightQEMARun(double MA, double E0);
     void ReweightQEVec(double mv);
+    void ReweightQERPA(double sigma);
+    void ReweightQECoulomb(double sigma);
     void ReweightQEZExpAxial(double norm, double a1, double a2, double a3, double a4);
     void ReweightQEZExpVector(double norm,
                               const std::array<double, 4>& Z_AP,
@@ -67,6 +69,14 @@ namespace rwgt{
                               const std::array<double, 4>& Z_BN);
     void ReweightQEZExpVector(double norm, double scaleFactor);
 
+    void ReweightEmpiricalMEC(double Mq2d, double mass, double width,
+                              double fracPN_NC, double fracPN_CC, double fracPN_EM,
+                              double fracCCQE, double fracNCQE, double fracEMQE);
+    void ReweightMEC(double normCC, double normNC, double normEM,
+                    double fracPN_CC, double fracDelta_CC,
+                    double decayAngModelInterp, double MECmodelInterp);
+
+    void ReweightDeltaDecayAngle(double sigma);
     void ReweightResGanged(double ma, double mv=0.0);
     void ReweightCCRes(double ma, double mv=0.0);
     void ReweightNCRes(double ma, double mv=0.0);
@@ -96,6 +106,8 @@ namespace rwgt{
     void ConfigureCCQE();
     void ConfigureNCEL();
     void ConfigureQEVec();
+	void ConfigureZexpVector();
+    void ConfigureMEC();
     void ConfigureCCRes();
     void ConfigureNCRes();
     void ConfigureResBkg();
