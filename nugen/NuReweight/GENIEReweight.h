@@ -90,24 +90,6 @@ namespace rwgt{
     void ReweightIntraNuke(ReweightLabel_t name, double sigma);
     void ReweightIntraNuke(int name, double sigma);
 
-    //General Reweight Configurations
-    void MaQEshape() {fMaQEshape=true;}
-    void MaQErate()  {fMaQEshape=false;}
-
-    void CCRESshape() {fMaCCResShape=true;}
-    void CCRESrate()  {fMaCCResShape=false;}
-
-    void NCRESshape() {fMaNCResShape=true;}
-    void NCRESrate()  {fMaNCResShape=false;}
-
-    void DIS_BYshape() {fDISshape=true;}
-    void DIS_BYrate()  {fDISshape=false;}
-
-    void UseSigmaDef()    {fUseSigmaDef=true;}
-    void UseStandardDef() {fUseSigmaDef=false;}
-
-    double CalculateSigma(ReweightLabel_t label, double value);
-
     double CalculateWeight(const genie::EventRecord& evr) const;
 
     //Functions to configure individual weight calculators

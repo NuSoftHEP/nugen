@@ -116,7 +116,6 @@ namespace rwgt {
     LOG_INFO("GENIEReweight") << "Create GENIEReweight object";
 
     fWcalc = new genie::rew::GReWeight();
-    this->SetNominalValues();
   }
 
   /// destructor
@@ -593,7 +592,6 @@ namespace rwgt {
   /// Simple Configuration of the CC Resonance weight calculator
   void GENIEReweight::ReweightCCRes(double ma, double mv) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for CC Resonance Reweighting";
-    fMaCCResShape=false;
     this->AddReweightValue(rwgt::fReweightMaCCRES, ma);
     if(mv!=0.0) {
       this->AddReweightValue(rwgt::fReweightMvCCRES, mv);
@@ -604,7 +602,6 @@ namespace rwgt {
   /// Simple Configuration of the NC Resonance weight calculator
   void GENIEReweight::ReweightNCRes(double ma, double mv) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for NC Resonance Reweighting";
-    fMaNCResShape=false;
     this->AddReweightValue(rwgt::fReweightMaNCRES, ma);
     if(mv!=0.0) {
       this->AddReweightValue(rwgt::fReweightMvNCRES, mv);
@@ -615,8 +612,6 @@ namespace rwgt {
   /// Simple Configuration of the NC and CC Resonance weight calculator with the axial mass parameter for NC/CC ganged together
   void GENIEReweight::ReweightResGanged(double ma, double mv) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for CC and NC Resonance Reweighting";
-    fMaCCResShape=false;
-    fMaNCResShape=false;
     this->AddReweightValue(rwgt::fReweightMaCCRES, ma);
     this->AddReweightValue(rwgt::fReweightMaNCRES, ma);
     if(mv!=0.0) {
@@ -719,7 +714,6 @@ namespace rwgt {
   /// Simple Configuration of the DIS FF model weight calculator
   void GENIEReweight::ReweightDIS(double aht, double bht, double cv1u, double cv2u) {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for DIS Form Factor Model Reweighting";
-    fDISshape = false;
     if(aht != 0.0) {
       this->AddReweightValue(rwgt::fReweightAhtBY, aht);
     }
@@ -1026,13 +1020,7 @@ namespace rwgt {
     GSystSet & syst = fWcalc->Systematics();
     for(unsigned int i = 0; i < fReWgtParameterName.size(); i++) {
       LOG_INFO("GENIEReweight") << "Configuring GENIEReweight parameter: " << genie::rew::GSyst::AsString(genie::rew::EGSyst(fReWgtParameterName[i])) << " with value: " << fReWgtParameterValue[i];
-      if(fUseSigmaDef) {
         syst.Set( (GSyst_t)fReWgtParameterName[i], fReWgtParameterValue[i]);
-      }
-      else {
-        double parameter = this->CalculateSigma((ReweightLabel_t)fReWgtParameterName[i], fReWgtParameterValue[i]);
-        syst.Set( (GSyst_t)fReWgtParameterName[i], parameter);
-      }
     }
     fWcalc->Reconfigure();
   }
