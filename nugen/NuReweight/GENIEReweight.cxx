@@ -522,7 +522,7 @@ namespace rwgt {
   void GENIEReweight::ReweightQEZExpVector(double norm, double scaleFactor)
   {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for Z-expansion QE Reweighting of vector FF (scale factor mode)";
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF, scaleFactor);
+    this->AddReweightValue(rwgt::fReweightZExpELFF, scaleFactor);
     this->Configure();
   }
 
@@ -534,25 +534,25 @@ namespace rwgt {
   {
     LOG_INFO("GENIEReweight") << "Configuring GENIEReweight for Z-expansion QE Reweighting of vector FF (all parameters mode)";
 
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_AP1, std::get<0>(Z_AP));
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_AP2, std::get<1>(Z_AP));
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_AP3, std::get<2>(Z_AP));
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_AP4, std::get<3>(Z_AP));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_AP1, std::get<0>(Z_AP));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_AP2, std::get<1>(Z_AP));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_AP3, std::get<2>(Z_AP));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_AP4, std::get<3>(Z_AP));
 
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_BP1, std::get<0>(Z_BP));
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_BP2, std::get<1>(Z_BP));
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_BP3, std::get<2>(Z_BP));
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_BP4, std::get<3>(Z_BP));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_BP1, std::get<0>(Z_BP));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_BP2, std::get<1>(Z_BP));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_BP3, std::get<2>(Z_BP));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_BP4, std::get<3>(Z_BP));
 
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_AN1, std::get<0>(Z_AN));
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_AN2, std::get<1>(Z_AN));
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_AN3, std::get<2>(Z_AN));
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_AN4, std::get<3>(Z_AN));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_AN1, std::get<0>(Z_AN));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_AN2, std::get<1>(Z_AN));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_AN3, std::get<2>(Z_AN));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_AN4, std::get<3>(Z_AN));
 
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_BN1, std::get<0>(Z_BN));
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_BN2, std::get<1>(Z_BN));
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_BN3, std::get<2>(Z_BN));
-    this->AddReweightValue(rwgt::kXSecTwkDial_ZExpELFF_BN4, std::get<3>(Z_BN));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_BN1, std::get<0>(Z_BN));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_BN2, std::get<1>(Z_BN));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_BN3, std::get<2>(Z_BN));
+    this->AddReweightValue(rwgt::fReweightZExpELFF_BN4, std::get<3>(Z_BN));
 
     this->Configure();
   }
