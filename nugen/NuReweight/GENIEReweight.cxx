@@ -276,6 +276,7 @@ namespace rwgt {
         case rwgt::fReweightEmpMEC_FracEMQE:
           fMECTypes |= MECType::Empirical;
           configure_MEC_calc = true;
+          break;
 
         case rwgt::fReweightNormCCMEC:
         case rwgt::fReweightNormNCMEC:
