@@ -106,7 +106,7 @@ namespace rwgt{
     void ConfigureCCQE();
     void ConfigureNCEL();
     void ConfigureQEVec();
-	void ConfigureZexpVector();
+    void ConfigureZexpVector();
     void ConfigureMEC();
     void ConfigureCCRes();
     void ConfigureNCRes();
