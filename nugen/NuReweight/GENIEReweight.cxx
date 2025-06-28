@@ -180,6 +180,7 @@ namespace rwgt {
     // these used to decide which calculators need to be configured
     bool configure_NCEL_calc = false,
          configure_CCQE_calc = false,
+         configure_CCQEAxial_calc = false,
          configure_QEVec_calc = false,
          configure_ZexpVector_calc = false,
          configure_CCRes_calc = false,
@@ -211,14 +212,14 @@ namespace rwgt {
         case rwgt::fReweightMaCCQEshape:
         case rwgt::fReweightE0CCQEshape:
           fMaCCQEModes |= CCQEKnobMode::RateShape;
-          configure_CCQE_calc = true;
+          configure_CCQEAxial_calc = true;
           break;
 
         // CC QE Axial parameters - parameter mode
         case rwgt::fReweightMaCCQE:
         case rwgt::fReweightE0CCQE:
           fMaCCQEModes |= CCQEKnobMode::Parameter;
-          configure_CCQE_calc = true;
+          configure_CCQEAxial_calc = true;
           break;
 
         // Z-expansion (axial) parameters
@@ -228,7 +229,7 @@ namespace rwgt {
         case rwgt::fReweightZExpA3CCQE:
         case rwgt::fReweightZExpA4CCQE:
           fMaCCQEModes |= CCQEKnobMode::ZExp;
-          configure_CCQE_calc = true;
+          configure_CCQEAxial_calc = true;
           break;
 
         // other CCQE effects
@@ -431,6 +432,7 @@ namespace rwgt {
     //configure the individual weight calculators
     if(configure_NCEL_calc) this->ConfigureNCEL();
     if(configure_CCQE_calc) this->ConfigureCCQE();
+    if(configure_CCQEAxial_calc) this->ConfigureCCQEAxial();
     if(configure_QEVec_calc) this->ConfigureQEVec();
     if(configure_ZexpVector_calc) this->ConfigureZexpVector();
     if(configure_MEC_calc) this->ConfigureMEC();
@@ -796,11 +798,20 @@ namespace rwgt {
   // Private Member functions to configure individual weight calculators.
 
   /// Configure the "CCQE" weight calculator.
-  /// (This is a bit confusing, because there's *another* weight calculator,
-  ///  configured below, that handles the vector form factors for CCQE.
+  /// (This is a bit confusing, because this same calculator is *also* used
+  ///  for axial-form-factor-related knobs (see below).)
+  void GENIEReweight::ConfigureCCQE()
+  {
+      fWcalc->AdoptWghtCalc( "xsec_ccqe", new GReWeightNuXSecCCQE);
+      LOG_INFO("GENIEReweight") << "Adding CCQE weight calculator for non-form-factor-related knobs";
+  }
+
+  /// Configure the "CCQE" weight calculator for axial-vector form factor changes.
+  /// (This is a bit confusing, because this same calculator is *also* used
+  ///  for non-form-factor-related knobs (see above).
   ///  Ultimately this comes down to GENIE's internal diagonalization of the knobs,
   ///  so we can't do anything about it.)
-  void GENIEReweight::ConfigureCCQE()
+  void GENIEReweight::ConfigureCCQEAxial()
   {
     for (const auto mode : {CCQEKnobMode::RateShape, CCQEKnobMode::Parameter, CCQEKnobMode::ZExp})
     {
@@ -826,7 +837,7 @@ namespace rwgt {
       }
       else
       {
-        std::cerr << "Reweight::ConfigureCCQE(): Unrecognized CCQEKnobMode: " << modeStr << "   Abort.\n";
+        std::cerr << "Reweight::ConfigureCCQEAxial(): Unrecognized CCQEKnobMode: " << modeStr << "   Abort.\n";
         abort();
       }
       fWcalc->AdoptWghtCalc( "xsec_ccqe_" + modeStr, calc);
@@ -907,7 +918,7 @@ namespace rwgt {
   {
     for (const auto mode : {KnobMode::RateShape, KnobMode::Parameter})
     {
-      if (! (fMaCCResModes.IsSet(mode)) )
+      if (! (fMaNCResModes.IsSet(mode)) )
         continue;
 
       auto calc = new GReWeightNuXSecNCRES;
@@ -955,7 +966,7 @@ namespace rwgt {
   void GENIEReweight::ConfigureDIS() {
     for (const auto mode : {KnobMode::RateShape, KnobMode::Parameter})
     {
-      if (! (fMaCCResModes.IsSet(mode)) )
+      if (! (fDISModes.IsSet(mode)) )
         continue;
 
       auto calc = new GReWeightNuXSecDIS;
@@ -1019,9 +1030,14 @@ namespace rwgt {
   /// configure the weight parameters being used
   void GENIEReweight::ConfigureParameters() {
     GSystSet & syst = fWcalc->Systematics();
-    for(unsigned int i = 0; i < fReWgtParameterName.size(); i++) {
-      LOG_INFO("GENIEReweight") << "Configuring GENIEReweight parameter: " << genie::rew::GSyst::AsString(genie::rew::EGSyst(fReWgtParameterName[i])) << " with value: " << fReWgtParameterValue[i];
-        syst.Set( (GSyst_t)fReWgtParameterName[i], fReWgtParameterValue[i]);
+    for(unsigned int i = 0; i < fReWgtParameterName.size(); i++)
+	{
+      auto gsyst = genie::rew::EGSyst(fReWgtParameterName[i]);
+      std::cout << "Configuring GENIEReweight parameter: " << genie::rew::GSyst::AsString(gsyst)
+                << " with " << (fUseSigmaDef ? "sigma" : "value") << ":" << fReWgtParameterValue[i]
+                << "\n";
+
+      syst.Set(gsyst, fReWgtParameterValue[i]);
     }
     fWcalc->Reconfigure();
   }

@@ -104,6 +104,7 @@ namespace rwgt{
 
     //Functions to configure individual weight calculators
     void ConfigureCCQE();
+    void ConfigureCCQEAxial();
     void ConfigureNCEL();
     void ConfigureQEVec();
     void ConfigureZexpVector();
