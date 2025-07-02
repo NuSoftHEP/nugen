@@ -12,6 +12,7 @@
 #include <set>
 #include <fstream>
 #include "nugen/NuReweight/ReweightLabels.h"
+#include "nugen/NuReweight/BitFlags.h"
 
 //namespace simb  { class MCTruth;      }
 //namespace simb  { class GTruth;       }
@@ -25,16 +26,26 @@ namespace rwgt{
 
   class GENIEReweight {
 
+    using enum_type = unsigned int;
+
   public:
     GENIEReweight();
     ~GENIEReweight();
+
+    enum class KnobMode : enum_type { Parameter = 1 << 0, RateShape = 1 << 1 };
+    enum class CCQEKnobMode : enum_type
+    {
+      Parameter = static_cast<enum_type>(KnobMode::Parameter),
+      RateShape = static_cast<enum_type>(KnobMode::RateShape),
+      ZExp = 1 << 2
+    };
+    enum class MECType : enum_type { Empirical = 1 << 0, Theory = 1 << 1 };
 
 #ifndef __GCCXML__
 
     void AddReweightValue(ReweightLabel_t rLabel, double value);
     void ChangeParameterValue(ReweightLabel_t rLabel, double value);
 
-    double NominalParameterValue(ReweightLabel_t rLabel);
     double ReweightParameterValue(ReweightLabel_t rLabel);
 
     genie::rew::GReWeight* WeightCalculator() {return fWcalc;}
@@ -46,14 +57,31 @@ namespace rwgt{
     void ReweightNCEL(double ma, double eta);
 
     void ReweightQEMA(double ma);
+    void ReweightQEMARun(double MA, double E0);
     void ReweightQEVec(double mv);
-    void ReweightQEZExp(double norm, double a1, double a2, double a3, double a4);
+    void ReweightQERPA(double sigma);
+    void ReweightQECoulomb(double sigma);
+    void ReweightQEZExpAxial(double norm, double a1, double a2, double a3, double a4);
+    void ReweightQEZExpVector(double norm,
+                              const std::array<double, 4>& Z_AP,
+                              const std::array<double, 4>& Z_BP,
+                              const std::array<double, 4>& Z_AN,
+                              const std::array<double, 4>& Z_BN);
+    void ReweightQEZExpVector(double norm, double scaleFactor);
 
+    void ReweightEmpiricalMEC(double Mq2d, double mass, double width,
+                              double fracPN_NC, double fracPN_CC, double fracPN_EM,
+                              double fracCCQE, double fracNCQE, double fracEMQE);
+    void ReweightMEC(double normCC, double normNC, double normEM,
+                    double fracPN_CC, double fracDelta_CC,
+                    double decayAngModelInterp, double MECmodelInterp);
+
+    void ReweightDeltaDecayAngle(double sigma);
     void ReweightResGanged(double ma, double mv=0.0);
     void ReweightCCRes(double ma, double mv=0.0);
     void ReweightNCRes(double ma, double mv=0.0);
 
-    void ReweightCoh(double ma, double r0);
+    void ReweightCoh(double ma=-1, double r0=-1, double ccscale=1, double ncscale=1);
 
     void ReweightNonResRvp1pi(double sigma);
     void ReweightNonResRvbarp1pi(double sigma);
@@ -72,31 +100,15 @@ namespace rwgt{
     void ReweightIntraNuke(ReweightLabel_t name, double sigma);
     void ReweightIntraNuke(int name, double sigma);
 
-    //General Reweight Configurations
-    void MaQEshape() {fMaQEshape=true;}
-    void MaQErate()  {fMaQEshape=false;}
-
-    void CCRESshape() {fMaCCResShape=true;}
-    void CCRESrate()  {fMaCCResShape=false;}
-
-    void NCRESshape() {fMaNCResShape=true;}
-    void NCRESrate()  {fMaNCResShape=false;}
-
-    void DIS_BYshape() {fDISshape=true;}
-    void DIS_BYrate()  {fDISshape=false;}
-
-    void UseSigmaDef()    {fUseSigmaDef=true;}
-    void UseStandardDef() {fUseSigmaDef=false;}
-
-    void SetNominalValues();
-    double CalculateSigma(ReweightLabel_t label, double value);
-
     double CalculateWeight(const genie::EventRecord& evr) const;
 
     //Functions to configure individual weight calculators
+    void ConfigureCCQE();
+    void ConfigureCCQEAxial();
     void ConfigureNCEL();
-    void ConfigureQEMA();
     void ConfigureQEVec();
+    void ConfigureZexpVector();
+    void ConfigureMEC();
     void ConfigureCCRes();
     void ConfigureNCRes();
     void ConfigureResBkg();
@@ -113,37 +125,17 @@ namespace rwgt{
 #endif
 
   protected:
+    util::BitFlags<CCQEKnobMode> fMaCCQEModes;
+    util::BitFlags<KnobMode> fMaCCResModes;
+    util::BitFlags<KnobMode> fMaNCResModes;
+    util::BitFlags<KnobMode> fDISModes;
 
-    //Reweight configuration bools it is possible to use all simultaneously
-    bool fReweightNCEL;
-    bool fReweightQEMA;
-    bool fReweightQEVec;
-    bool fReweightCCRes;
-    bool fReweightNCRes;
-    bool fReweightResBkg;
-    bool fReweightResDecay;
-    bool fReweightNC;
-    bool fReweightDIS;
-    bool fReweightCoh;
-    bool fReweightAGKY;
-    bool fReweightDISNucMod;
-    bool fReweightFGM;
-    bool fReweightFZone;
-    bool fReweightINuke;
-    bool fReweightZexp;
-    bool fReweightMEC;   //Not used. Reserved for future addition to GENIE
-
-    bool fMaQEshape;
-    bool fMaCCResShape;
-    bool fMaNCResShape;
-    bool fDISshape;
+    util::BitFlags<MECType> fMECTypes;
 
     bool fUseSigmaDef;
 
     std::vector<int> fReWgtParameterName;
     std::vector<double> fReWgtParameterValue;
-
-    std::map<int, double> fNominalParameters;
 
     genie::rew::GReWeight* fWcalc;
 

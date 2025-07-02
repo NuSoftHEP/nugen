@@ -142,7 +142,70 @@ namespace rwgt {
     fReweightZExpA2CCQE = genie::rew::kXSecTwkDial_ZExpA2CCQE,       ///< tweak Z-expansion coefficient 2, affects dsigma(CCQE)/dQ2 both in shape and normalization
     fReweightZExpA3CCQE = genie::rew::kXSecTwkDial_ZExpA3CCQE,       ///< tweak Z-expansion coefficient 3, affects dsigma(CCQE)/dQ2 both in shape and normalization
     fReweightZExpA4CCQE = genie::rew::kXSecTwkDial_ZExpA4CCQE,       ///< tweak Z-expansion coefficient 4, affects dsigma(CCQE)/dQ2 both in shape and normalization
-    fReweightAxFFCCQEshape = genie::rew::kXSecTwkDial_AxFFCCQEshape  ///< tweak axial nucleon form factors (dipole -> z-expansion) - shape only effect of dsigma(CCQE)/dQ2
+    fReweightAxFFCCQEshape = genie::rew::kXSecTwkDial_AxFFCCQEshape, ///< tweak axial nucleon form factors (dipole -> z-expansion) - shape only effect of dsigma(CCQE)/dQ2
+
+    //
+    //   Alternative approach to CCQE form factors (RunningMA)
+    //
+    fReweightE0CCQEshape = genie::rew::kXSecTwkDial_E0CCQEshape,  ///< tweak E0 CCQE RunningMA, affects dsigma(CCQE)/dQ2 in shape only (normalized to constant integral)
+    fReweightE0CCQE = genie::rew::kXSecTwkDial_E0CCQE,            ///< tweak E0 CCQE RunningMA, affects dsigma(CCQE)/dQ2 both in shape and normalization
+
+    //
+    // Empirical MEC dials
+    //
+    fReweightEmpMEC_Mq2d = genie::rew::kXSecTwkDial_EmpMEC_Mq2d,           ///< tweak the "mass^2" parameter in the Q^2 component of Empirical MEC's form factor
+    fReweightEmpMEC_Mass = genie::rew::kXSecTwkDial_EmpMEC_Mass,           ///< tweak the "mass" parameter in the W component of Empirical MEC's form factor
+    fReweightEmpMEC_Width = genie::rew::kXSecTwkDial_EmpMEC_Width,         ///< tweak the "width" parameter in the W component of Empirical MEC's form factor
+    fReweightEmpMEC_FracPN_NC = genie::rew::kXSecTwkDial_EmpMEC_FracPN_NC, ///< tweak fraction of initial-state NP (vs. NN or PP) pairs in NC reactions
+    fReweightEmpMEC_FracPN_CC = genie::rew::kXSecTwkDial_EmpMEC_FracPN_CC, ///< tweak fraction of initial-state NP (vs. NN or PP) pairs in CC reactions
+    fReweightEmpMEC_FracCCQE = genie::rew::kXSecTwkDial_EmpMEC_FracCCQE,   ///< tweak the overall rate as a function of the QE rate for CC reactions
+    fReweightEmpMEC_FracNCQE = genie::rew::kXSecTwkDial_EmpMEC_FracNCQE,   ///< tweak the overall rate as a function of the QE rate for CC reactions
+    fReweightEmpMEC_FracPN_EM = genie::rew::kXSecTwkDial_EmpMEC_FracPN_EM, ///< tweak fraction of initial-state NP (vs. NN or PP) pairs in EM (electron-probe) reactions
+    fReweightEmpMEC_FracEMQE = genie::rew::kXSecTwkDial_EmpMEC_FracEMQE,   ///< tweak the overall rate as a function of the QE rate for EM (electron-probe) reactions
+
+    //
+	// General MEC dials
+	//
+    fReweightNormCCMEC = genie::rew::kXSecTwkDial_NormCCMEC,               ///< tweak the overall normalization of MEC events in CC reactions
+    fReweightNormNCMEC = genie::rew::kXSecTwkDial_NormNCMEC,               ///< tweak the overall normalization of MEC events in NC reactions
+    fReweightNormEMMEC = genie::rew::kXSecTwkDial_NormEMMEC,               ///< tweak the overall normalization of MEC events in EM (electron-probe) reactions
+    fReweightDecayAngMEC = genie::rew::kXSecTwkDial_DecayAngMEC,           ///< tweak the (reaction frame) angular distribution between outgoing nucleons in MEC events
+    fReweightFracPN_CCMEC = genie::rew::kXSecTwkDial_FracPN_CCMEC,         ///< tweak fraction of initial-state NP (vs. NN or PP) pairs in CC reactions (see fXSecTwkDial_EmpMEC_FracPN_CC for Empirical MEC)
+    fReweightFracDelta_CCMEC = genie::rew::kXSecTwkDial_FracDelta_CCMEC,   ///< tweak the fraction of CCMEC events involving an internal delta line (currently only used by Valencia MEC)
+  	fReweightXSecShape_CCMEC = genie::rew::kXSecTwkDial_XSecShape_CCMEC,   ///< tweak the shape of CCMEC differential cross section (interpolates between models)
+
+  	fReweightRPA_CCQE = genie::rew::kXSecTwkDial_RPA_CCQE,                 ///< interpolate between the default CCQE model and the same one with RPA off (only gives non-unit weights for Nieves CCQE)
+
+    fReweightTheta_Delta2NRad = genie::rew::kRDcyTwkDial_Theta_Delta2NRad, ///< Distort photon angular distribution in Delta -> N + photon
+
+  	fReweightCoulombCCQE = genie::rew::kXSecTwkDial_CoulombCCQE,           ///< Tweak the value of the EM potential used when computing the Coulomb correction factor in the Nieves CCQE model
+
+    fReweightNormCCCOHpi = genie::rew::kXSecTwkDial_NormCCCOHpi,           ///< Scale the normalization of CC coherent pion production
+    fReweightNormNCCOHpi = genie::rew::kXSecTwkDial_NormNCCOHpi,           ///< Scale the normalization of NC coherent pion production
+
+    //
+    // Alternative approach to CCQE form factors (z-expansion) vector form factor
+    //
+    fReweightZExpELFF = genie::rew::kXSecTwkDial_ZExpELFF,
+    fReweightZExpELFF_AP1 = genie::rew::kXSecTwkDial_ZExpELFF_AP1,
+    fReweightZExpELFF_AP2 = genie::rew::kXSecTwkDial_ZExpELFF_AP2,
+    fReweightZExpELFF_AP3 = genie::rew::kXSecTwkDial_ZExpELFF_AP3,
+    fReweightZExpELFF_AP4 = genie::rew::kXSecTwkDial_ZExpELFF_AP4,
+    fReweightZExpELFF_AN1 = genie::rew::kXSecTwkDial_ZExpELFF_AN1,
+    fReweightZExpELFF_AN2 = genie::rew::kXSecTwkDial_ZExpELFF_AN2,
+    fReweightZExpELFF_AN3 = genie::rew::kXSecTwkDial_ZExpELFF_AN3,
+    fReweightZExpELFF_AN4 = genie::rew::kXSecTwkDial_ZExpELFF_AN4,
+    fReweightZExpELFF_BP1 = genie::rew::kXSecTwkDial_ZExpELFF_BP1,
+    fReweightZExpELFF_BP2 = genie::rew::kXSecTwkDial_ZExpELFF_BP2,
+    fReweightZExpELFF_BP3 = genie::rew::kXSecTwkDial_ZExpELFF_BP3,
+    fReweightZExpELFF_BP4 = genie::rew::kXSecTwkDial_ZExpELFF_BP4,
+    fReweightZExpELFF_BN1 = genie::rew::kXSecTwkDial_ZExpELFF_BN1,
+    fReweightZExpELFF_BN2 = genie::rew::kXSecTwkDial_ZExpELFF_BN2,
+    fReweightZExpELFF_BN3 = genie::rew::kXSecTwkDial_ZExpELFF_BN3,
+    fReweightZExpELFF_BN4 = genie::rew::kXSecTwkDial_ZExpELFF_BN4,
+
+
+    kNTwkDials, /// < Not a real dial, just keep as last entry for looping purposes
 
   } ReweightLabel_t;
 

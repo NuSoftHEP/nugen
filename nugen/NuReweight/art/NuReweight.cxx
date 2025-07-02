@@ -97,7 +97,57 @@
 #include "nusimdata/SimulationBase/GTruth.h"
 #include "nugen/NuReweight/art/NuReweight.h"
 
-namespace rwgt {
+namespace rwgt
+{
+  bool operator!=(const simb::GTruth & lhs, const simb::GTruth & rhs)
+  {
+    bool eq = lhs.fVertex == rhs.fVertex
+           && lhs.fweight == rhs.fweight
+           && lhs.fprobability == rhs.fprobability
+           && lhs.fXsec == rhs.fXsec
+           && lhs.fDiffXsec == rhs.fDiffXsec
+           && lhs.fGPhaseSpace == rhs.fGPhaseSpace
+           && lhs.fProbePDG == rhs.fProbePDG
+           && lhs.fProbeP4 == rhs.fProbeP4
+           && lhs.fTgtP4 == rhs.fTgtP4
+           && lhs.ftgtZ == rhs.ftgtZ
+           && lhs.ftgtA == rhs.ftgtA
+           && lhs.ftgtPDG == rhs.ftgtPDG
+           && lhs.fHitNucPDG == rhs.fHitNucPDG
+           && lhs.fHitQrkPDG == rhs.fHitQrkPDG
+           && lhs.fIsSeaQuark == rhs.fIsSeaQuark
+           && lhs.fHitNucP4 == rhs.fHitNucP4
+           && lhs.fHitNucPos == rhs.fHitNucPos
+           && lhs.fGscatter == rhs.fGscatter
+           && lhs.fGint == rhs.fGint
+           && lhs.fgQ2 == rhs.fgQ2
+           && lhs.fgq2 == rhs.fgq2
+           && lhs.fgW == rhs.fgW
+           && lhs.fgT == rhs.fgT
+           && lhs.fgX == rhs.fgX
+           && lhs.fgY == rhs.fgY
+           && lhs.fgWrun == rhs.fgWrun
+           && lhs.fFSleptonP4 == rhs.fFSleptonP4
+           && lhs.fFShadSystP4 == rhs.fFShadSystP4
+           && lhs.fIsCharm == rhs.fIsCharm
+           && lhs.fCharmHadronPdg == rhs.fCharmHadronPdg
+           && lhs.fStrangeHadronPdg == rhs.fStrangeHadronPdg
+           && lhs.fNumProton == rhs.fNumProton
+           && lhs.fNumNeutron == rhs.fNumNeutron
+           && lhs.fNumPi0 == rhs.fNumPi0
+           && lhs.fNumPiPlus == rhs.fNumPiPlus
+           && lhs.fNumPiMinus == rhs.fNumPiMinus
+           && lhs.fNumSingleGammas == rhs.fNumSingleGammas
+           && lhs.fNumRho0 == rhs.fNumRho0
+           && lhs.fNumRhoPlus == rhs.fNumRhoPlus
+           && lhs.fNumRhoMinus == rhs.fNumRhoMinus
+           && lhs.fResNum == rhs.fResNum
+           && lhs.fDecayMode == rhs.fDecayMode
+           && lhs.fFinalQuarkPdg == rhs.fFinalQuarkPdg
+           && lhs.fFinalLeptonPdg == rhs.fFinalLeptonPdg;
+   return !eq;
+  }
+
 
   ///<constructor
   NuReweight::NuReweight() {
@@ -111,11 +161,18 @@ namespace rwgt {
 
   double NuReweight::CalcWeight(const simb::MCTruth & truth, const simb::GTruth & gtruth) const {
 
-    genie::EventRecord* evr = evgb::RetrieveGHEP(truth, gtruth);
+  // do some rudimentary caching to prevent repeated requests for the same event
+  // from creating new genie::EventRecords over and over
+  static simb::GTruth cached_gtruth = simb::GTruth();
+  static std::unique_ptr<genie::EventRecord> evr = nullptr;
+  if (cached_gtruth != gtruth)
+  {
+    cached_gtruth = gtruth;
+    evr.reset(evgb::RetrieveGHEP(truth, gtruth));
+  }
 
     double wgt = this->CalculateWeight(*evr);
 
-    delete evr;
     //mf::LogVerbatim("GENIEReweight") << "New Event Weight is: " << wgt;
     return wgt;
   }
