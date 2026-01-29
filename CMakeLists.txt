@@ -19,7 +19,7 @@ find_package(cetmodules 2.29.06 REQUIRED)
 project(nugen LANGUAGES CXX)
 
 include(CetCMakeEnv)
-set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 1.23.01-sbn01)
+set(${PROJECT_NAME}_CMAKE_PROJECT_VERSION_STRING 1.23.01-sbn02)
 cet_cmake_env()
 
 cet_set_compiler_flags(DIAGS CAUTIOUS WERROR
