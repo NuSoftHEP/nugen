@@ -343,7 +343,8 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
 #ifdef OLD_KINE_CALC
   //const TLorentzVector & p1 = (hitnucl) ? *(hitnucl->P4()) : pdummy;
 
-  double M  = genie::constants::kNucleonMass;
+  const int n_nucs = (procInfo.IsMEC()) ? 2 : 1;
+  const double M  = n_nucs * genie::constants::kNucleonMass;
   TLorentzVector q  = k1-k2;                     // q=k1-k2, 4-p transfer
   double Q2 = -1 * q.M2();                       // momemtum transfer
   double v  = (hitnucl) ? q.Energy()       : -1; // v (E transfer to the nucleus)
@@ -370,7 +371,8 @@ void evgb::FillMCTruth(const genie::EventRecord *record,
 #else
   if ( hitnucl || procInfo.IsCoherent() ) {
 #endif
-    const double M  = genie::constants::kNucleonMass;
+    const int n_nucs = (procInfo.IsMEC()) ? 2 : 1;
+    const double M  = n_nucs * genie::constants::kNucleonMass;
     // Bjorken x.
     // Rein & Sehgal use this same formulation of x even for Coherent
     x  = 0.5*Q2/(M*v);
