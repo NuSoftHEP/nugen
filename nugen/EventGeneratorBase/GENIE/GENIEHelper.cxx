@@ -169,7 +169,7 @@
 #include "art/Framework/Services/Registry/ServiceHandle.h"
 #include "cetlib/search_path.h"
 #include "cetlib/getenv.h"
-#include "cetlib/split_path.h"
+#include "cetlib/split_search_path.h"
 #include "cetlib_except/exception.h"
 #include "fhiclcpp/ParameterSet.h"
 #include "messagefacility/MessageLogger/MessageLogger.h"
@@ -1971,7 +1971,7 @@ namespace evgb {
     if ( fFluxType.find("tree_") == 0 ) randomizeFiles = true;
 
     std::vector<std::string> dirs;
-    cet::split_path(fFluxSearchPaths,dirs);
+    dirs=cet::split_search_path(fFluxSearchPaths);
     if ( dirs.empty() ) dirs.push_back(std::string()); // at least null string
 
     glob_t g;
